@@ -1,10 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Test</title>
-</head>
-<body>
 
-</body>
-</html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    h1 {
+        padding-left: 40px;
+        margin-bottom: -10px;
+    }
+
+    h3 {
+        padding-left: 40px;
+        margin-bottom: -10px;
+        margin-block-end: 0em;
+        margin-block-start: 0em;
+    }
+
+    .counties {
+        fill: none;
+    }
+
+    .states {
+        fill: none;
+        stroke: #fff;
+        stroke-linejoin: round;
+    }
+
+
+</style>
+<h1></h1></br>
+<h3></h3></br>
+<svg width="960" height="600"></svg>
+<script src="js/d3.v4.min.js"></script>
+<script src="js/topojson.v1.min.js"></script>
+<script>
+
+    var title = d3.select("h1")
+        .text("US Drought Monitor");
+    var subtitle = d3.select("h3")
+        .text("Colored by Drought Severity and Coverage Index of each county");
+
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+    var rateById = d3.map();
+
+    var color1 = d3.scaleLinear()
+        .domain([0, 1])
+        .range(['#4a69bd', '#b33939'])
+        .interpolate(d3.interpolateHcl);
+
+
+    var projection = d3.geoAlbersUsa()
+        .scale(1280)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geoPath()
+        .projection(projection);
+
+    d3.queue()
+        .defer(d3.json, "js/us.json")
+        .defer(d3.tsv, "tsv/drought.tsv", function(d) {
+            var droughtRate = (parseFloat(d.D0) + 2 * parseFloat(d.D1) + 3*parseFloat(d.D2) + 4*parseFloat(d.D3) + 5*parseFloat(d.D4) + 1)/1500;
+            rateById.set(d.FIPS, droughtRate);
+        })
+        .await(ready);
+
+    function ready(error, us) {
+        if (error) throw error;
+
+        svg.append("g")
+            .attr("class", "counties")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.counties).features)
+            .enter().append("path")
+            .attr("d", path)
+            .style("fill", function(d) {
+                return color1(rateById.get(d.id));
+            });
+
+        svg.append("path")
+            .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+            .attr("class", "states")
+            .attr("d", path);
+    }
+
+</script>
