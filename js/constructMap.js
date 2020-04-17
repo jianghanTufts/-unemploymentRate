@@ -1,7 +1,7 @@
 var pageWidth = $("body").width();
 var pageHeight = $("body").width()
 var svg = d3.select("svg"),
-    width = pageWidth * 0.8,
+    width = pageWidth * 0.7,
     height = pageHeight * 0.8;
 var rateById = d3.map();
 
@@ -13,7 +13,7 @@ var color1 = d3.scaleLinear()
 var projection = d3.geoAlbersUsa()
     .scale(width)
     // .translate([-50, -50])
-    .translate([width * 0.5, height * 0.3 ]);
+    .translate([width * 0.5, height * 0.22 ]);
 
 var path = d3.geoPath()
     .projection(projection);
