@@ -16,6 +16,8 @@ html,body{
 }
 .counties {
     fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
 }
 
 .states {

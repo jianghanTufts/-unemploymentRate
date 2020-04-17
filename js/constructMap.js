@@ -7,7 +7,7 @@ var rateById = d3.map();
 
 var color1 = d3.scaleLinear()
     .domain([0, 20])
-    .range(['#4a69bd', '#b33939'])
+    .range(['#4a69bd', '#682828'])
     .interpolate(d3.interpolateHcl);
 
 var projection = d3.geoAlbersUsa()
@@ -31,11 +31,13 @@ d3.queue()
 function ready(error, us) {
     if (error) throw error;
     svg.append("g")
-        .attr("class", "counties")
+        .attr("class", "countries")
         .selectAll("path")
         .data(topojson.feature(us, us.objects.counties).features)
         .enter().append("path")
         .attr("d", path)
+        .attr("stroke", "#fff")
+        .attr("stroke-opacity", 0.1)
         .attr("class",function(d){
             var stateId = parseInt(d.id / 1000);
             return "county-"+d.id + " state-" + stateId;
@@ -86,7 +88,7 @@ var sliderStep = d3
     .step(1)
     .default(2010)
     .on('onchange', val => {
-        d3.select('p#value-step').text(d3.format('d')(val));
+        //d3.select('p#value-step').text(d3.format('d')(val));
         var filename = "csv/"+val+"_country_data_utf8.csv";
         d3.queue()
             .defer(d3.json, "js/us.json")
@@ -102,11 +104,11 @@ var sliderStep = d3
 var gStep = d3
     .select('div#slider-step')
     .append('svg')
-    .attr('width', 1100)
+    .attr('width', 1400)
     .attr('height', 100)
     .append('g')
-    .attr('transform', 'translate(30,30)');
+    .attr('transform', 'translate(300,30)');
 
 gStep.call(sliderStep);
 
-d3.select('p#value-step').text(d3.format('d')(sliderStep.value()));
+//d3.select('p#value-step').text(d3.format('d')(sliderStep.value()));
