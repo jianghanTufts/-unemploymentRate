@@ -6,7 +6,7 @@ var svg = d3.select("svg"),
 var rateById = d3.map();
 
 var color1 = d3.scaleLinear()
-    .domain([0, 50])
+    .domain([0, 20])
     .range(['#4a69bd', '#b33939'])
     .interpolate(d3.interpolateHcl);
 
@@ -27,6 +27,7 @@ d3.queue()
         rateById.set(connected_id, unemplyment_rate);
     })
     .await(ready);
+
 function ready(error, us) {
     if (error) throw error;
     svg.append("g")
@@ -70,3 +71,42 @@ function handleMouseClickMap(d, i){
     console.log(d);
     console.log(i);
 }
+
+
+//construct slider
+var data = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
+// Step
+var sliderStep = d3
+    .sliderBottom()
+    .min(d3.min(data))
+    .max(d3.max(data))
+    .width(1000)
+    .tickFormat(d3.format('d'))
+    .ticks(9)
+    .step(1)
+    .default(2010)
+    .on('onchange', val => {
+        d3.select('p#value-step').text(d3.format('d')(val));
+        var filename = "csv/"+val+"_country_data_utf8.csv";
+        d3.queue()
+            .defer(d3.json, "js/us.json")
+            .defer(d3.csv, filename, function(d) {
+                //var droughtRate = (parseFloat(d.D0) + 2 * parseFloat(d.D1) + 3*parseFloat(d.D2) + 4*parseFloat(d.D3) + 5*parseFloat(d.D4) + 1)/1500;
+                var unemplyment_rate = parseFloat(d.unemplyment_rate);
+                var connected_id = parseInt(d.id + d.county);
+                rateById.set(connected_id, unemplyment_rate);
+            })
+            .await(ready)
+    });
+
+var gStep = d3
+    .select('div#slider-step')
+    .append('svg')
+    .attr('width', 1100)
+    .attr('height', 100)
+    .append('g')
+    .attr('transform', 'translate(30,30)');
+
+gStep.call(sliderStep);
+
+d3.select('p#value-step').text(d3.format('d')(sliderStep.value()));
