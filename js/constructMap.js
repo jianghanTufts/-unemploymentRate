@@ -23,8 +23,8 @@ d3.queue()
     .await(function (error,us) {
         if (error) throw error;
         globalUS = us;
-
         drawMap();
+        buildChart();
     });
 
 
@@ -56,6 +56,59 @@ function drawMap(year = "2010") {
         .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
         .attr("class", "states")
         .attr("d", path);
+}
+
+function buildChart() {
+    var x_axis = d3.scaleLinear()
+        .domain([1, 12])
+        .rangeRound([600, 960]);
+    var bar = svg.append('g')
+        .attr('class', 'key')
+        .attr('transform', 'translate(0,40)');
+        
+    var rgb_arr = [0,3,6,9,12,15,18,21,24];
+    var bar_rgb_color = [];
+    for (var i = 0; i < 9; i++)
+    {
+        bar_rgb_color.push(color1(rgb_arr[i]));
+    }
+    
+    var bar_color = d3.scaleThreshold()
+        .domain(d3.range(1,88))
+        .range(bar_rgb_color);
+    
+    bar.selectAll('rect')
+        .data(bar_color.range().map(function(d) {
+            
+                d = bar_color.invertExtent(d);
+                if (d[0] == null) d[0] = x_axis.domain()[0];
+                if (d[1] == null) d[1] = x_axis.domain()[1];
+                return d;
+            }))
+        .enter().append('rect')
+            .attr('height', 8)
+            .attr('x', function(d) { return x_axis(d[0]); })
+            .attr('width', function(d) {return x_axis(d[1]) - x_axis(d[0]); })
+            .attr('fill', function(d) { return bar_color(d[0]); });
+
+    var s_ize = [1,2,3,5,7,9];
+    bar.append('text')
+        .attr('class', 'caption')
+        .attr('x', x_axis.range()[0])
+        .attr('y', -6)
+        .attr('fill', '#000')
+        .attr('text-anchor', 'start')
+        .attr('font-weight', 'bold')
+        .text('Unempoyment rating');
+
+        bar.call(d3.axisBottom(x_axis)
+                .tickSize(13)
+                .tickFormat(function(x, i) {
+                    var floatNumber = d3.format(".1f");
+                    return i == 6 ? '' : i == 0 ? '0.0%' : floatNumber(s_ize[i]/0.45)+'%'; })
+                .tickValues(s_ize))
+                .select('.domain')
+                .remove();
 }
 
 function handleMouseOverMap(d){
@@ -90,6 +143,7 @@ var sliderStep = d3
     .on('onchange', year => {
         //d3.select('p#value-step').text(d3.format('d')(val));
         drawMap(year);
+        buildChart();
 
     });
 
