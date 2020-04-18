@@ -3,11 +3,10 @@ var pageHeight = $("body").width()
 var svg = d3.select("svg"),
     width = pageWidth * 0.7,
     height = pageHeight * 0.8;
-var rateById = d3.map();
 
 var color1 = d3.scaleLinear()
     .domain([0, 20])
-    .range(['#4a69bd', '#682828'])
+    .range(['#4a69bd', '#181818'])
     .interpolate(d3.interpolateHcl);
 
 var projection = d3.geoAlbersUsa()
@@ -18,22 +17,23 @@ var projection = d3.geoAlbersUsa()
 var path = d3.geoPath()
     .projection(projection);
 
+var globalUS;
 d3.queue()
-    .defer(d3.json, "js/us.json")
-    .defer(d3.csv, "csv/2010_country_data_utf8.csv", function(d) {
-        //var droughtRate = (parseFloat(d.D0) + 2 * parseFloat(d.D1) + 3*parseFloat(d.D2) + 4*parseFloat(d.D3) + 5*parseFloat(d.D4) + 1)/1500;
-        var unemplyment_rate = parseFloat(d.unemplyment_rate);
-        var connected_id = parseInt(d.id + d.county);
-        rateById.set(connected_id, unemplyment_rate);
-    })
-    .await(ready);
+     .defer(d3.json, "js/us.json")
+    .await(function (error,us) {
+        if (error) throw error;
+        globalUS = us;
 
-function ready(error, us) {
-    if (error) throw error;
+        drawMap();
+    });
+
+
+function drawMap(year = "2010") {
+    svg.selectAll("*").remove();
     svg.append("g")
         .attr("class", "countries")
         .selectAll("path")
-        .data(topojson.feature(us, us.objects.counties).features)
+        .data(topojson.feature(globalUS, globalUS.objects.counties).features)
         .enter().append("path")
         .attr("d", path)
         .attr("stroke", "#fff")
@@ -43,17 +43,17 @@ function ready(error, us) {
             return "county-"+d.id + " state-" + stateId;
         })
         .attr("data-fill",function(d) {
-            return color1(rateById.get(d.id));
+            return color1(rate_by_year.get(year).get(d.id));
         })
         .style("fill", function(d) {
-            return color1(rateById.get(d.id));
+            return color1(rate_by_year.get(year).get(d.id));
         })
         .on("mouseover",handleMouseOverMap)
         .on("mouseout",handleMouseOutMap)
         .on("click ",handleMouseClickMap);
 
     svg.append("path")
-        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+        .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
         .attr("class", "states")
         .attr("d", path);
 }
@@ -82,33 +82,23 @@ var sliderStep = d3
     .sliderBottom()
     .min(d3.min(data))
     .max(d3.max(data))
-    .width(1000)
+    .width(0.65*width)
     .tickFormat(d3.format('d'))
     .ticks(9)
     .step(1)
     .default(2010)
-    .on('onchange', val => {
+    .on('onchange', year => {
         //d3.select('p#value-step').text(d3.format('d')(val));
-        var filename = "csv/"+val+"_country_data_utf8.csv";
-        d3.queue()
-            .defer(d3.json, "js/us.json")
-            .defer(d3.csv, filename, function(d) {
-                //var droughtRate = (parseFloat(d.D0) + 2 * parseFloat(d.D1) + 3*parseFloat(d.D2) + 4*parseFloat(d.D3) + 5*parseFloat(d.D4) + 1)/1500;
-                var unemplyment_rate = parseFloat(d.unemplyment_rate);
-                var connected_id = parseInt(d.id + d.county);
-                rateById.set(connected_id, unemplyment_rate);
-            })
-            .await(ready)
+        drawMap(year);
+
     });
 
 var gStep = d3
     .select('div#slider-step')
     .append('svg')
-    .attr('width', 1400)
+    .attr('width', width)
     .attr('height', 100)
     .append('g')
-    .attr('transform', 'translate(300,30)');
+    .attr('transform', 'translate('+ 0.3*width + ',30)');
 
 gStep.call(sliderStep);
-
-//d3.select('p#value-step').text(d3.format('d')(sliderStep.value()));
