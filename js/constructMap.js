@@ -150,12 +150,12 @@ function buildChart() {
 }
 
 function handleMouseOverMap(d){
-    var stateId = parseInt(d.id / 1000);
+    var stateId = parseIntd.id;
     $(".state-"+stateId).css("fill","orange");
     console.log($(this).data("fill"));
 }
 function handleMouseOutMap(d){
-    var stateId = parseInt(d.id / 1000);
+    var stateId = parseInt(d.id);
     $(".state-"+stateId).each(function(){
         $(this).css("fill",$(this).data("fill"));
     });
@@ -178,11 +178,16 @@ function clicked(d) {
         y = (bounds[0][1] + bounds[1][1]) / 2,
         scale = 0.5 / Math.max(dx / width, dy / height),
         translate = [width * 0.5 - scale * x, height * 0.22 - scale * y];
-        console.log(y);
     state_map.transition()
         .duration(750)
         .style("stroke-width", 1.5 / scale + "px")
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+    
+//    console.log(state_map.selectAll("county_borders"));
+    
+    state_map.selectAll(".county_borders")
+    .transition()
+    .remove();
     
     state_map.append("path")
         .datum(topojson.mesh(globalUS, globalUS.objects.counties, function(a, b) { 
@@ -191,7 +196,28 @@ function clicked(d) {
         .duration(750)
         .attr("id", "county-borders")
         .attr("class", "county_borders")
-        .attr("d", path);
+        .attr("d", path)
+        .style("stroke", "#e3e3e3")
+        .style("stroke-width", ".3px")
+        ;
+    
+    state_map.selectAll("path")
+//                .transition()
+                .on("mouseover", function (d) {
+                    if (d.id > 1000)
+                    {
+                        $(".county-"+d.id).css("fill","orange");
+                        console.log($(this).data("fill"));
+                    }
+                })
+                .on("mouseout", function (d) {
+                    if (d.id > 1000)
+                    {
+                        $(this).css("fill",$(this).data("fill"));
+                    }
+                })
+//    state_map.selectAll
+    
 }
 
 function reset() {
@@ -205,7 +231,7 @@ function reset() {
         .style("stroke-width", "1.5px")
         .attr('transform', 'translate('+margin.left+','+margin.top+')');
     
-    svg.selectAll(".county_borders")
+    state_map.selectAll(".county_borders")
     .transition()
     .delay(100)
     .duration(750)
