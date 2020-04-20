@@ -4,6 +4,20 @@ var svg = d3.select("svg"),
     width = pageWidth * 0.7,
     height = pageHeight * 0.8;
 
+        var margin = {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right:10
+                }
+
+        var active = d3.select(null);
+        
+        var state_map = svg.append("g")
+
+
+
+
 var color1 = d3.scaleLinear()
     .domain([0, 20])
     .range(['#4a69bd', '#181818'])
@@ -11,7 +25,6 @@ var color1 = d3.scaleLinear()
 
 var projection = d3.geoAlbersUsa()
     .scale(width)
-    // .translate([-50, -50])
     .translate([width * 0.5, height * 0.22 ]);
 
 var path = d3.geoPath()
@@ -30,34 +43,44 @@ d3.queue()
 
 
 function drawMap(year = "2010") {
-    svg.selectAll("*").remove();
-    svg.append("g")
-        .attr("class", "countries")
-        .selectAll("path")
-        .data(topojson.feature(globalUS, globalUS.objects.counties).features)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("stroke", "#fff")
-        .attr("stroke-opacity", 0.1)
-        .attr("class",function(d){
-            countries.set(d.id, this);
-            var stateId = parseInt(d.id / 1000);
-            return "county-"+d.id + " state-" + stateId;
-        })
-        .attr("data-fill",function(d) {
-            return color1(rate_by_year.get(year).get(d.id));
-        })
-        .style("fill", function(d) {
-            return color1(rate_by_year.get(year).get(d.id));
-        })
-        .on("mouseover",handleMouseOverMap)
-        .on("mouseout",handleMouseOutMap)
-        .on("click ",handleMouseClickMap);
 
-    svg.append("path")
-        .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
-        .attr("class", "states")
-        .attr("d", path);
+        
+            state_map.append("g")
+                .attr("class", "countries")
+                .selectAll("path")
+                .data(topojson.feature(globalUS, globalUS.objects.counties).features)
+                .enter().append("path")
+                .attr("d", path)
+                .attr("stroke", "#fff")
+                .attr("stroke-opacity", 0.1)
+                .attr("class",function(d){
+                    countries.set(d.id, this);
+                    var stateId = parseInt(d.id / 1000);
+                    return "county-"+d.id + " state-" + stateId;
+                })
+                .attr("data-fill",function(d) {
+                    return color1(rate_by_year.get(year).get(d.id));
+                })
+                .style("fill", function(d) {
+                    return color1(rate_by_year.get(year).get(d.id));
+                })
+                .on("click", reset);
+            
+        state_map.append("g")
+                .attr("id", "states")
+                .selectAll("path")
+                .data(topojson.feature(globalUS, globalUS.objects.states).features)
+                .enter().append("path")
+                .attr("d", path)
+                .style("opacity", 0)
+                .on("click", clicked);
+
+
+
+        state_map.append("path")
+            .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
+            .attr("class", "states_borders")
+            .attr("d", path);
 }
 
 function changeData(year = "2010"){
@@ -140,6 +163,54 @@ function handleMouseOutMap(d){
 function handleMouseClickMap(d, i){
     console.log(d);
     console.log(i);
+}
+
+function clicked(d) {
+    if (d3.select('.background').node() === this) return reset();
+    if (active.node() === this) return reset();
+    active.classed("active", false);
+    active = d3.select(this).classed("active", true);
+
+    var bounds = path.bounds(d),
+        dx = bounds[1][0] - bounds[0][0],
+        dy = bounds[1][1] - bounds[0][1],
+        x = (bounds[0][0] + bounds[1][0]) / 2,
+        y = (bounds[0][1] + bounds[1][1]) / 2,
+        scale = 0.5 / Math.max(dx / width, dy / height),
+        translate = [width * 0.5 - scale * x, height * 0.22 - scale * y];
+        console.log(y);
+    state_map.transition()
+        .duration(750)
+        .style("stroke-width", 1.5 / scale + "px")
+        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+    
+    state_map.append("path")
+        .datum(topojson.mesh(globalUS, globalUS.objects.counties, function(a, b) { 
+            return  d.id == Math.floor(a.id/1000) && a !== b ; }))
+        .transition()
+        .duration(750)
+        .attr("id", "county-borders")
+        .attr("class", "county_borders")
+        .attr("d", path);
+}
+
+function reset() {
+    console.log("reset");
+    active.classed("active", false);
+    active = d3.select(null);
+
+    state_map.transition()
+        .delay(100)
+        .duration(750)
+        .style("stroke-width", "1.5px")
+        .attr('transform', 'translate('+margin.left+','+margin.top+')');
+    
+    svg.selectAll(".county_borders")
+    .transition()
+    .delay(100)
+    .duration(750)
+    .remove();
+//	console.log(g.selectAll("#county-borders"));
 }
 
 

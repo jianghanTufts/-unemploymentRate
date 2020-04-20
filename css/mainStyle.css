@@ -19,13 +19,6 @@ html,body{
     stroke: #fff;
     stroke-linejoin: round;
 }
-
-.states {
-    fill: none;
-    stroke: #fff;
-    stroke-linejoin: round;
-}
-
 .map-container{
     display: inline-block;
     margin-left: 10%;
@@ -38,4 +31,33 @@ html,body{
 }
 .counties{
     cursor: pointer;
+}
+/*new*/
+.states_borders{
+    fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
+}
+#states .active {
+    display:none;
+}
+#county-borders {
+    fill: none;
+    stroke: #e3e3e3;
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.county-boundary {
+    fill: #aaa;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+.county-boundary:hover, .state:hover {
+    fill: orange;
+}
+#states {
+    fill: #aaa;
 }
