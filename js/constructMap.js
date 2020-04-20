@@ -18,6 +18,7 @@ var path = d3.geoPath()
     .projection(projection);
 
 var globalUS;
+var countries = new Map();
 d3.queue()
      .defer(d3.json, "js/us.json")
     .await(function (error,us) {
@@ -39,6 +40,7 @@ function drawMap(year = "2010") {
         .attr("stroke", "#fff")
         .attr("stroke-opacity", 0.1)
         .attr("class",function(d){
+            countries.set(d.id, this);
             var stateId = parseInt(d.id / 1000);
             return "county-"+d.id + " state-" + stateId;
         })
@@ -56,6 +58,19 @@ function drawMap(year = "2010") {
         .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
         .attr("class", "states")
         .attr("d", path);
+}
+
+function changeData(year = "2010"){
+    countries.forEach(function (item, key, mapObj) {
+        d3.select(item)
+            .attr("data-fill",function(d) {
+                return color1(rate_by_year.get(year).get(key));
+            })
+            .style("fill", function(d) {
+                return color1(rate_by_year.get(year).get(key));
+            });
+
+    });
 }
 
 function buildChart() {
@@ -142,7 +157,8 @@ var sliderStep = d3
     .default(2010)
     .on('onchange', year => {
         //d3.select('p#value-step').text(d3.format('d')(val));
-        drawMap(year);
+        //drawMap(year);
+        changeData(year);
         buildChart();
 
     });
