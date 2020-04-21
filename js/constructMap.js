@@ -29,7 +29,7 @@ var projection = d3.geoAlbersUsa()
 
 var path = d3.geoPath()
     .projection(projection);
-
+    
 var globalUS;
 var countries = new Map();
 d3.queue()
@@ -149,23 +149,24 @@ function buildChart() {
                 .remove();
 }
 
-function handleMouseOverMap(d){
-    var stateId = parseIntd.id;
-    $(".state-"+stateId).css("fill","orange");
-    console.log($(this).data("fill"));
-}
-function handleMouseOutMap(d){
-    var stateId = parseInt(d.id);
-    $(".state-"+stateId).each(function(){
-        $(this).css("fill",$(this).data("fill"));
-    });
-}
-function handleMouseClickMap(d, i){
-    console.log(d);
-    console.log(i);
-}
+//function handleMouseOverMap(d){
+//    var stateId = parseIntd.id;
+//    $(".state-"+stateId).css("fill","orange");
+//    console.log($(this).data("fill"));
+//}
+//function handleMouseOutMap(d){
+//    var stateId = parseInt(d.id);
+//    $(".state-"+stateId).each(function(){
+//        $(this).css("fill",$(this).data("fill"));
+//    });
+//}
+//function handleMouseClickMap(d, i){
+//    console.log(d);
+//    console.log(i);
+//}
 
 function clicked(d) {
+//    console.log(id_to_countyName);
     if (d3.select('.background').node() === this) return reset();
     if (active.node() === this) return reset();
     active.classed("active", false);
@@ -202,15 +203,54 @@ function clicked(d) {
         ;
     
     state_map.selectAll("path")
-//                .transition()
                 .on("mouseover", function (d) {
+//                    console.log(path.bounds(d));
+//                    console.log(id_to_countyName.get(d.id));
+                    
+                    console.log(path.bounds(d));
+                    var county_bounds = path.bounds(d),
+                        county_dx = county_bounds[1][0] - county_bounds[0][0],
+                        county_dy = county_bounds[1][1] - county_bounds[0][1],
+                        county_x = (county_bounds[0][0] + county_bounds[1][0]) / 2,
+                        county_y = (county_bounds[0][1] + county_bounds[1][1]) / 2;
+//                    console.log(y);
+//                    console.log(d3.event.pageX);
+                    var rect_width = 0;
+                    if (id_to_countyName.has(d.id))
+                    {
+                        rect_width = id_to_countyName.get(d.id).length;
+                        state_map.append("rect")
+                            .attr("x", county_x+4)
+                            .attr("y", county_y-13)
+                            .attr("width", rect_width*2)
+                            .attr("height", 8)
+                            .style("opacity",0.3)
+                            .attr("class", "county_label1")
+                            .style("fill", "#e3e3e3")
+                            .style("stroke", "grey");
+                            
+                        state_map.append("text")
+                            .attr("transform", function(d){return "translate("+(county_x+8)+","+(county_y-8)+")"})
+                            .text(id_to_countyName.get(d.id))
+                            .attr("class", "county_label2")
+                            .style("fill", "rgb(203, 214, 0)")
+                            .attr("dy", ".35em")
+                            .style("font-size", "3.5px");
+                    }
+                    
+
+//                           .style("x", (d3.event.pageX))     
+//                           .style("y", (d3.event.pageY - 28));   
+                    
+//                    console.log(d);
                     if (d.id > 1000)
                     {
                         $(".county-"+d.id).css("fill","orange");
-                        console.log($(this).data("fill"));
                     }
                 })
                 .on("mouseout", function (d) {
+                    state_map.select(".county_label1").remove();
+                    state_map.select(".county_label2").remove();
                     if (d.id > 1000)
                     {
                         $(this).css("fill",$(this).data("fill"));
@@ -220,8 +260,10 @@ function clicked(d) {
     
 }
 
-function reset() {
-    console.log("reset");
+function reset(d) {
+//    console.log("reset");
+//    console.log(state_map.selectAll("."+d.id));
+    
     active.classed("active", false);
     active = d3.select(null);
 
