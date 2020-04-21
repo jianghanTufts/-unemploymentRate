@@ -10,6 +10,27 @@ var margin = {
     left: 10,
     right:10
 }
+//chart's value
+var chartWidth = 800;
+var chartHeight = 500;
+var barHeight = 15;
+var yAxisOffset = 150;
+var xAxisOffset = 50;
+var offsetBetweenBar = 5;
+var offsetBetweenBarXAxis = 10;
+
+var format0d = d3.format("02d");
+
+let svgRanking = d3.select("#ranking")
+    .append('svg')
+    .attr('width', chartWidth)
+    .attr('height', chartHeight);
+
+let svgChosenCounty = d3.select("#county_select")
+    .append('svg')
+    .attr('width', chartWidth)
+    .attr('height', chartHeight/5);
+
 
 var active = d3.select(null);
 
@@ -28,12 +49,14 @@ var projection = d3.geoAlbersUsa()
 var path = d3.geoPath()
     .projection(projection);
 
+//global values
 var globalUS;
+var currentYear = "2010";
 
 //the global variable of the chosen state and county
 //the value "1" is for testing, it should be set to 0 by default
 var chosenStateId = 1;
-var chosenCountyId = 1;
+var chosenCountyId = 1001;
 
 var countries = new Map();
 d3.queue()
@@ -43,7 +66,8 @@ d3.queue()
         globalUS = us;
         drawMap();
         buildChart();
-        drawRankingChart("2010", "state");
+        drawRankingChart("2010", "state",svgRanking);
+        drawSelectCounty(svgChosenCounty);
     });
 
 
@@ -99,7 +123,10 @@ function changeData(year = "2010"){
             });
 
     });
-    drawRankingChart(year.toString(), "state");
+    if(chosenStateId == 0)
+        drawRankingChart(year.toString(), "state", svgRanking);
+    else
+        drawRankingChart(year.toString(), "county", svgRanking);
 }
 
 function buildChart() {
@@ -303,6 +330,7 @@ var sliderStep = d3
     .on('onchange', year => {
         //d3.select('p#value-step').text(d3.format('d')(val));
         //drawMap(year);
+        currentYear = year;
         changeData(year);
         buildChart();
 
@@ -320,36 +348,21 @@ gStep.call(sliderStep);
 
 
 //draw chart
-var chartWidth = 800;
-var chartHeight = 500;
-var barHeight = 15;
-var yAxisOffset = 150;
-var xAxisOffset = 50;
-var offsetBetweenBar = 5;
-var offsetBetweenBarXAxis = 10;
 
-var format0d = d3.format("02d");
-
-let svg2 = d3.select("#ranking")
-    .append('svg')
-    .attr('width', chartWidth)
-    .attr('height', chartHeight);
 
 function getXScale(objectList, chart_catogary, zoomRate = 1){
-    console.log(d3.max(objectList, function(d) {
-        if(chart_catogary == "county")
-            return d.county_rate;
-        else
-            return d.state_rate;
-    }));
+    var maxRate = 0;
+    if(chart_catogary == "county")
+        maxRate = objectList[0].county_rate;
+    else
+        maxRate = objectList[0].state_rate;
+
+    // var scale = d3.scaleLinear()
+    //     .domain([0, zoomRate * maxRate])
+    //     .range([0, zoomRate * 0.3*chartWidth]);
     var scale = d3.scaleLinear()
-        .domain([0, zoomRate * d3.max(objectList, function(d) {
-            if(chart_catogary == "county")
-                return d.county_rate;
-            else if(chart_catogary == "state")
-                return d.state_rate;
-        })])
-        .range([0, zoomRate * 0.3*chartWidth]);
+        .domain([0, 25])
+        .range([0, zoomRate * 0.5*chartWidth]);
     return scale;
 }
 
@@ -365,25 +378,38 @@ function getYScale(objectList, chart_catogary){
     return scale;
 }
 
-function drawRankingChart(year, chart_catogary = "state") {
+function setTitle(title, text) {
+    d3.select(title).text(text);
+}
+
+function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], sliceCount = 20) {
+    if(chart_catogary == "county")
+        setTitle("#ranking_title", "Unemployment Rate:")
+    else
+        setTitle("#ranking_title", "Unemployment Rate: USA Top "+ sliceCount.toString());
     var objectList;
-    if(chart_catogary == "state"){
-        objectList = getStateList(year);
-    }
+
+    if(dataList.length != 0)
+        objectList = dataList;
     else{
-        objectList = getCountyList(year);
+        if(chart_catogary == "state"){
+            objectList = getStateList(year);
+        }
+        else{
+            objectList = getCountyList(year);
+        }
+        objectList.sort((a,b)=>{
+            if(chart_catogary == "county")
+                return b.county_rate - a.county_rate;
+            else
+                return b.state_rate - a.state_rate;
+        })
+        objectList = objectList.slice(0,sliceCount);
     }
-    objectList.sort((a,b)=>{
-        if(chart_catogary == "county")
-            return b.county_rate - a.county_rate;
-        else
-            return b.state_rate - a.state_rate;
-    })
-    objectList = objectList.slice(0,20);
-    console.log(objectList);
+
     svg2.selectAll("*").remove();
     var xScale = getXScale(objectList, chart_catogary);
-    var xAxisScale = getXScale(objectList, chart_catogary, 1.5);
+    var xAxisScale = getXScale(objectList, chart_catogary, 1);
     var yScale = getYScale(objectList, chart_catogary);
 
     var yAxis =d3.axisLeft()
@@ -462,11 +488,28 @@ function drawRankingChart(year, chart_catogary = "state") {
 
 }
 
+function drawSelectCounty(svg) {
+    setTitle("#chosen_county_title", id_to_countyName.get(chosenCountyId));
+    svg.selectAll("*").remove();
+    var countyList = getChosenCounty(currentYear, chosenCountyId);
+    drawRankingChart(currentYear,"county",svg,countyList)
+}
 
 function getCountyList(year ) {
     var countyList = [];
     for(item of year_state_county.get(year).get(format0d(chosenStateId))){
         countyList.push(item);
+    }
+    return countyList;
+}
+
+function getChosenCounty(year, countyID) {
+    var countyList = [];
+    for(item of year_state_county.get(year).get(format0d(chosenStateId))){
+        if(item.county_id == countyID) {
+            countyList.push(item);
+            break;
+        }
     }
     return countyList;
 }
