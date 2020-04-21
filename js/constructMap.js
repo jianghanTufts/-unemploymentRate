@@ -21,6 +21,10 @@ var offsetBetweenBarXAxis = 10;
 
 var format0d = d3.format("02d");
 
+var div = d3.select("#detail_info")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
 let svgRanking = d3.select("#ranking")
     .append('svg')
     .attr('width', chartWidth)
@@ -436,6 +440,31 @@ function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], s
         .attr('x', yAxisOffset)
         .attr('y', function(d,i){
             return (i) * (barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + xAxisOffset;
+        })
+        .on("mouseover", function(d) {
+            var name = "";
+            var id;
+            if(chart_catogary == "state"){
+                name = d.state_name;
+                id = d.state_id;
+            }
+            else{
+                name = d.county_name;
+                id = d.county_id;
+            }
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            var rank = getChosenRank(id,chart_catogary);
+            var newHtml = "<p>"+ name +"</p><p>Rank:    "+rank.toString()+"</p>";
+            div.html(newHtml)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
         });
 
     bar.append("text")
@@ -489,6 +518,8 @@ function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], s
 }
 
 function drawSelectCounty(svg) {
+    if(chosenCountyId == 0)
+        return;
     setTitle("#chosen_county_title", id_to_countyName.get(chosenCountyId));
     svg.selectAll("*").remove();
     var countyList = getChosenCounty(currentYear, chosenCountyId);
@@ -497,7 +528,7 @@ function drawSelectCounty(svg) {
 
 function getCountyList(year ) {
     var countyList = [];
-    for(item of year_state_county.get(year).get(format0d(chosenStateId))){
+    for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
         countyList.push(item);
     }
     return countyList;
@@ -505,7 +536,7 @@ function getCountyList(year ) {
 
 function getChosenCounty(year, countyID) {
     var countyList = [];
-    for(item of year_state_county.get(year).get(format0d(chosenStateId))){
+    for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
         if(item.county_id == countyID) {
             countyList.push(item);
             break;
@@ -513,7 +544,40 @@ function getChosenCounty(year, countyID) {
     }
     return countyList;
 }
-
+function getChosenRank(id, catogary = "state") {
+    var tmplist;
+    var rank = 0;
+    if(catogary == "county") {
+        tmplist = getCountyList(currentYear);
+    }
+    else{
+        tmplist = getStateList(currentYear);
+    }
+    tmplist.sort((a,b)=>{
+        if(catogary == "county")
+            return b.county_rate - a.county_rate;
+        else
+            return b.state_rate - a.state_rate;
+    })
+    for(var i=0;i<tmplist.length;i++)
+    {
+        if(catogary == "county") {
+            if(tmplist[i].county_id == id)
+            {
+                rank = i;
+                break;
+            }
+        }
+        else{
+            if(tmplist[i].state_id == id)
+            {
+                rank = i;
+                break;
+            }
+        }
+    }
+    return rank+1;
+}
 function getStateList(year) {
     var stateList = [];
     year_state_rate.get(parseInt(year)).forEach(function (value, key, map) {
