@@ -69,7 +69,7 @@ d3.queue()
         if (error) throw error;
         globalUS = us;
         drawMap();
-        buildChart();
+        buildPercetageChart();
         drawRankingChart("2010", "state",svgRanking);
         drawSelectCounty(svgChosenCounty);
     });
@@ -97,7 +97,7 @@ function drawMap(year = "2010") {
         .style("fill", function(d) {
             return color1(rate_by_year.get(year).get(d.id));
         })
-        .on("click", reset);
+        .on("click", resetOnCounty);
 
     state_map.append("g")
         .attr("id", "states")
@@ -106,7 +106,7 @@ function drawMap(year = "2010") {
         .enter().append("path")
         .attr("d", path)
         .style("opacity", 0)
-        .on("click", clicked);
+        .on("click", clickOnState);
 
 
 
@@ -133,7 +133,7 @@ function changeData(year = "2010"){
         drawRankingChart(year.toString(), "county", svgRanking);
 }
 
-function buildChart() {
+function buildPercetageChart() {
     var x_axis = d3.scaleLinear()
         .domain([1, 12])
         .rangeRound([600, 960]);
@@ -186,26 +186,12 @@ function buildChart() {
         .remove();
 }
 
-//function handleMouseOverMap(d){
-//    var stateId = parseIntd.id;
-//    $(".state-"+stateId).css("fill","orange");
-//    console.log($(this).data("fill"));
-//}
-//function handleMouseOutMap(d){
-//    var stateId = parseInt(d.id);
-//    $(".state-"+stateId).each(function(){
-//        $(this).css("fill",$(this).data("fill"));
-//    });
-//}
-//function handleMouseClickMap(d, i){
-//    console.log(d);
-//    console.log(i);
-//}
+function clickOnState(d) {
+    chosenStateId = d.id;
+    drawRankingChart(currentYear,"county",svgRanking)
 
-function clicked(d) {
-//    console.log(id_to_countyName);
-    if (d3.select('.background').node() === this) return reset();
-    if (active.node() === this) return reset();
+    if (d3.select('.background').node() === this) return resetOnCounty();
+    if (active.node() === this) return resetOnCounty();
     active.classed("active", false);
     active = d3.select(this).classed("active", true);
 
@@ -220,8 +206,6 @@ function clicked(d) {
         .duration(750)
         .style("stroke-width", 1.5 / scale + "px")
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-//    console.log(state_map.selectAll("county_borders"));
 
     state_map.selectAll(".county_borders")
         .transition()
@@ -241,17 +225,15 @@ function clicked(d) {
 
     state_map.selectAll("path")
         .on("mouseover", function (d) {
-//                    console.log(path.bounds(d));
-//                    console.log(id_to_countyName.get(d.id));
-
-            console.log(path.bounds(d));
+            console.log(d.id);
+            chosenCountyId = d.id;
+            drawSelectCounty(svgChosenCounty);
+            
             var county_bounds = path.bounds(d),
                 county_dx = county_bounds[1][0] - county_bounds[0][0],
                 county_dy = county_bounds[1][1] - county_bounds[0][1],
                 county_x = (county_bounds[0][0] + county_bounds[1][0]) / 2,
                 county_y = (county_bounds[0][1] + county_bounds[1][1]) / 2;
-//                    console.log(y);
-//                    console.log(d3.event.pageX);
             var rect_width = 0;
             if (id_to_countyName.has(d.id))
             {
@@ -274,12 +256,6 @@ function clicked(d) {
                     .attr("dy", ".35em")
                     .style("font-size", "3.5px");
             }
-
-
-//                           .style("x", (d3.event.pageX))
-//                           .style("y", (d3.event.pageY - 28));
-
-//                    console.log(d);
             if (d.id > 1000)
             {
                 $(".county-"+d.id).css("fill","orange");
@@ -293,13 +269,9 @@ function clicked(d) {
                 $(this).css("fill",$(this).data("fill"));
             }
         })
-//    state_map.selectAll
-
 }
 
-function reset(d) {
-//    console.log("reset");
-//    console.log(state_map.selectAll("."+d.id));
+function resetOnCounty(d) {
 
     active.classed("active", false);
     active = d3.select(null);
@@ -315,7 +287,6 @@ function reset(d) {
         .delay(100)
         .duration(750)
         .remove();
-//	console.log(g.selectAll("#county-borders"));
 }
 
 
@@ -336,7 +307,7 @@ var sliderStep = d3
         //drawMap(year);
         currentYear = year;
         changeData(year);
-        buildChart();
+        buildPercetageChart();
 
     });
 
