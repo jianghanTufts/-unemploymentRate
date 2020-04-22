@@ -1,6 +1,6 @@
 var pageWidth = $("body").width();
 var pageHeight = $("body").width()
-var svg = d3.select("svg"),
+var svg = d3.select("#main-map"),
     width = pageWidth * 0.7,
     height = pageHeight * 0.8;
 
