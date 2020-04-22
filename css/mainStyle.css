@@ -93,3 +93,16 @@ html,body{
     height: 1.5em;
     background-position: center;
 }
+.tooltip {
+     position: absolute;
+     text-align: center;
+     width: 100px;
+     height: 80px;
+     padding: 2px;
+     font: 12px sans-serif;
+     color: white;
+     background: #742a2a;
+     border: 0px;
+     border-radius: 8px;
+     pointer-events: none;
+ }

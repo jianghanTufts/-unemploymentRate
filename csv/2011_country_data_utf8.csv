@@ -75,24 +75,24 @@ id,county,county_name,year,labor,employed,unemployed,unemplyment_rate
 02,070,"Dillingham Census Area, AK",2011,2106,1883,223,10.6
 02,090,"Fairbanks North Star Borough, AK",2011,48354,45238,3116,6.4
 02,100,"Haines Borough, AK",2011,1167,1050,117,10
-02,105,"Hoonah-Angoon Census Area, AK",2011,1099,933,166,15.1
+02,232,"Hoonah-Angoon Census Area, AK",2011,1099,933,166,15.1
 02,110,"Juneau Borough/city, AK",2011,17907,16913,994,5.6
 02,122,"Kenai Peninsula Borough, AK",2011,27273,24675,2598,9.5
 02,130,"Ketchikan Gateway Borough, AK",2011,7180,6560,620,8.6
 02,150,"Kodiak Island Borough, AK",2011,6783,6281,502,7.4
-02,158,"Kusilvak Census Area, AK",2011,2759,2177,582,21.1
+02,270,"Kusilvak Census Area, AK",2011,2759,2177,582,21.1
 02,164,"Lake and Peninsula Borough, AK",2011,638,542,96,15
 02,170,"Matanuska-Susitna Borough, AK",2011,43368,39390,3978,9.2
 02,180,"Nome Census Area, AK",2011,4127,3619,508,12.3
 02,185,"North Slope Borough, AK",2011,3993,3690,303,7.6
 02,188,"Northwest Arctic Borough, AK",2011,2987,2524,463,15.5
 02,195,"Petersburg Borough, AK",2011,1856,1701,155,8.4
-02,198,"Prince of Wales-Hyder Census Area, AK",2011,2572,2254,318,12.4
+02,201,"Prince of Wales-Hyder Census Area, AK",2011,2572,2254,318,12.4
 02,220,"Sitka Borough/city, AK",2011,4632,4348,284,6.1
 02,230,"Skagway Municipality, AK",2011,716,600,116,16.2
 02,240,"Southeast Fairbanks Census Area, AK",2011,3202,2804,398,12.4
 02,261,"Valdez-Cordova Census Area, AK",2011,4938,4449,489,9.9
-02,275,"Wrangell Borough/city, AK",2011,1051,972,79,7.5
+02,280,"Wrangell Borough/city, AK",2011,1051,972,79,7.5
 02,282,"Yakutat Borough/city, AK",2011,301,269,32,10.6
 02,290,"Yukon-Koyukuk Census Area, AK",2011,2706,2208,498,18.4
 04,001,"Apache County, AZ",2011,23040,18788,4252,18.5
@@ -2410,7 +2410,7 @@ id,county,county_name,year,labor,employed,unemployed,unemplyment_rate
 46,097,"Miner County, SD",2011,1294,1236,58,4.5
 46,099,"Minnehaha County, SD",2011,99359,94899,4460,4.5
 46,101,"Moody County, SD",2011,4124,3860,264,6.4
-46,102,"Oglala Lakota County, SD",2011,3726,3198,528,14.2
+46,113,"Oglala Lakota County, SD",2011,3726,3198,528,14.2
 46,103,"Pennington County, SD",2011,52984,50421,2563,4.8
 46,105,"Perkins County, SD",2011,1569,1501,68,4.3
 46,107,"Potter County, SD",2011,1237,1171,66,5.3
