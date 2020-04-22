@@ -79,8 +79,8 @@ html,body{
 .tooltip {
      position: absolute;
      text-align: center;
-     width: 50px;
-     height: 50px;
+     width: 100px;
+     height: 80px;
      padding: 2px;
      font: 12px sans-serif;
      color: white;
