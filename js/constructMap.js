@@ -1,14 +1,14 @@
 var pageWidth = $("body").width();
 var pageHeight = $("body").width()
-var svg = d3.select("#main-map"),
-    width = pageWidth * 0.7,
-    height = pageHeight * 0.8;
+var svg = d3.select("svg"),
+        width = pageWidth * 0.7,
+        height = pageHeight * 0.8;
 
 var margin = {
-    top: 10,
-    bottom: 10,
-    left: 10,
-    right:10
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right:10
 }
 //chart's value
 var chartWidth = 800;
@@ -20,38 +20,38 @@ var offsetBetweenBar = 5;
 var offsetBetweenBarXAxis = 10;
 
 var format0d = d3.format("02d");
+var barLock = false;
 
 var div = d3.select("#detail_info")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
 let svgRanking = d3.select("#ranking")
-    .append('svg')
-    .attr('width', chartWidth)
-    .attr('height', chartHeight);
+        .append('svg')
+        .attr('width', chartWidth)
+        .attr('height', chartHeight);
 
 let svgChosenCounty = d3.select("#county_select")
-    .append('svg')
-    .attr('width', chartWidth)
-    .attr('height', chartHeight/5);
+        .append('svg')
+        .attr('width', chartWidth)
+        .attr('height', chartHeight/5);
 
-
+var countyCart = new Set();
 var active = d3.select(null);
-
 var state_map = svg.append("g")
 
 
 var color1 = d3.scaleLinear()
-    .domain([0, 20])
-    .range(['#4a69bd', '#181818'])
-    .interpolate(d3.interpolateHcl);
+        .domain([0, 20])
+        .range(['#4a69bd', '#181818'])
+        .interpolate(d3.interpolateHcl);
 
 var projection = d3.geoAlbersUsa()
-    .scale(width)
-    .translate([width * 0.5, height * 0.22 ]);
+        .scale(width)
+        .translate([width * 0.5, height * 0.22 ]);
 
 var path = d3.geoPath()
-    .projection(projection);
+        .projection(projection);
 
 //global values
 var globalUS;
@@ -61,232 +61,296 @@ var currentYear = "2010";
 //the value "1" is for testing, it should be set to 0 by default
 var chosenStateId = 1;
 var chosenCountyId = 1001;
-
+var lastClickedCountyId = -1;
+var lastCountyObj;
 var countries = new Map();
 d3.queue()
-    .defer(d3.json, "js/us.json")
-    .await(function (error,us) {
-        if (error) throw error;
-        globalUS = us;
-        drawMap();
-        buildPercetageChart();
-        drawRankingChart("2010", "state",svgRanking);
-        drawSelectCounty(svgChosenCounty);
-    });
+        .defer(d3.json, "js/us.json")
+        .await(function (error,us) {
+                if (error) throw error;
+                globalUS = us;
+                drawMap();
+                buildPercetageChart();
+                drawRankingChart("2010", "state",svgRanking);
+                drawSelectCounty(svgChosenCounty);
+        });
 
 
 function drawMap(year = "2010") {
 
+        state_map.append("g")
+                .attr("class", "countries")
+                .selectAll("path")
+                .data(topojson.feature(globalUS, globalUS.objects.counties).features)
+                .enter().append("path")
+                .attr("d", path)
+                .attr("stroke", "#fff")
+                .attr("stroke-opacity", 0.1)
+                .attr("class",function(d){
+                        countries.set(d.id, this);
+                        var stateId = parseInt(d.id / 1000);
+                        return "county-"+d.id + " state-" + stateId;
+                })
+                .attr("data-fill",function(d) {
+                        return color1(rate_by_year.get(year).get(d.id));
+                })
+                .style("fill", function(d) {
+                        return color1(rate_by_year.get(year).get(d.id));
+                })
+                .on("click", selectCounty);
 
-    state_map.append("g")
-        .attr("class", "countries")
-        .selectAll("path")
-        .data(topojson.feature(globalUS, globalUS.objects.counties).features)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("stroke", "#fff")
-        .attr("stroke-opacity", 0.1)
-        .attr("class",function(d){
-            countries.set(d.id, this);
-            var stateId = parseInt(d.id / 1000);
-            return "county-"+d.id + " state-" + stateId;
-        })
-        .attr("data-fill",function(d) {
-            return color1(rate_by_year.get(year).get(d.id));
-        })
-        .style("fill", function(d) {
-            return color1(rate_by_year.get(year).get(d.id));
-        })
-        .on("click", resetOnCounty);
-
-    state_map.append("g")
-        .attr("id", "states")
-        .selectAll("path")
-        .data(topojson.feature(globalUS, globalUS.objects.states).features)
-        .enter().append("path")
-        .attr("d", path)
-        .style("opacity", 0)
-        .on("click", clickOnState);
+        state_map.append("g")
+                .attr("id", "states")
+                .selectAll("path")
+                .data(topojson.feature(globalUS, globalUS.objects.states).features)
+                .enter().append("path")
+                .attr("d", path)
+                .style("opacity", 0)
+                .on("click", clickOnState)
+                .on("mouseover", mouseOverState)
+                .on("mouseout", mouseOutState);
 
 
 
-    state_map.append("path")
-        .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
-        .attr("class", "states_borders")
-        .attr("d", path);
+        state_map.append("path")
+                .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
+                .attr("class", "states_borders")
+                .attr("d", path);
 }
 
 function changeData(year = "2010"){
-    countries.forEach(function (item, key, mapObj) {
-        d3.select(item)
-            .attr("data-fill",function(d) {
-                return color1(rate_by_year.get(year).get(key));
-            })
-            .style("fill", function(d) {
-                return color1(rate_by_year.get(year).get(key));
-            });
+        countries.forEach(function (item, key, mapObj) {
+                d3.select(item)
+                        .attr("data-fill",function(d) {
+                                return color1(rate_by_year.get(year).get(key));
+                        })
+                        .style("fill", function(d) {
+                                return color1(rate_by_year.get(year).get(key));
+                        });
 
-    });
-    if(chosenStateId == 0)
-        drawRankingChart(year.toString(), "state", svgRanking);
-    else
-        drawRankingChart(year.toString(), "county", svgRanking);
+        });
+        if(chosenStateId == 0)
+                drawRankingChart(year.toString(), "state", svgRanking);
+        else
+                drawRankingChart(year.toString(), "county", svgRanking);
 }
 
 function buildPercetageChart() {
-    var x_axis = d3.scaleLinear()
-        .domain([1, 12])
-        .rangeRound([600, 960]);
-    var bar = svg.append('g')
-        .attr('class', 'key')
-        .attr('transform', 'translate(0,40)');
+        var x_axis = d3.scaleLinear()
+                .domain([1, 12])
+                .rangeRound([600, 960]);
+        var bar = svg.append('g')
+                .attr('class', 'key')
+                .attr('transform', 'translate(0,40)');
 
-    var rgb_arr = [0,3,6,9,12,15,18,21,24];
-    var bar_rgb_color = [];
-    for (var i = 0; i < 9; i++)
-    {
-        bar_rgb_color.push(color1(rgb_arr[i]));
-    }
+        var rgb_arr = [0,3,6,9,12,15,18,21,24];
+        var bar_rgb_color = [];
+        for (var i = 0; i < 9; i++)
+        {
+                bar_rgb_color.push(color1(rgb_arr[i]));
+        }
 
-    var bar_color = d3.scaleThreshold()
-        .domain(d3.range(1,88))
-        .range(bar_rgb_color);
+        var bar_color = d3.scaleThreshold()
+                .domain(d3.range(1,88))
+                .range(bar_rgb_color);
 
-    bar.selectAll('rect')
-        .data(bar_color.range().map(function(d) {
+        bar.selectAll('rect')
+                .data(bar_color.range().map(function(d) {
 
-            d = bar_color.invertExtent(d);
-            if (d[0] == null) d[0] = x_axis.domain()[0];
-            if (d[1] == null) d[1] = x_axis.domain()[1];
-            return d;
-        }))
-        .enter().append('rect')
-        .attr('height', 8)
-        .attr('x', function(d) { return x_axis(d[0]); })
-        .attr('width', function(d) {return x_axis(d[1]) - x_axis(d[0]); })
-        .attr('fill', function(d) { return bar_color(d[0]); });
+                        d = bar_color.invertExtent(d);
+                        if (d[0] == null) d[0] = x_axis.domain()[0];
+                        if (d[1] == null) d[1] = x_axis.domain()[1];
+                        return d;
+                }))
+                .enter().append('rect')
+                .attr('height', 8)
+                .attr('x', function(d) { return x_axis(d[0]); })
+                .attr('width', function(d) {return x_axis(d[1]) - x_axis(d[0]); })
+                .attr('fill', function(d) { return bar_color(d[0]); });
 
-    var s_ize = [1,2,3,5,7,9];
-    bar.append('text')
-        .attr('class', 'caption')
-        .attr('x', x_axis.range()[0])
-        .attr('y', -6)
-        .attr('fill', '#000')
-        .attr('text-anchor', 'start')
-        .attr('font-weight', 'bold')
-        .text('Unempoyment rating');
+        var s_ize = [1,2,3,5,7,9];
+        bar.append('text')
+                .attr('class', 'caption')
+                .attr('x', x_axis.range()[0])
+                .attr('y', -6)
+                .attr('fill', '#000')
+                .attr('text-anchor', 'start')
+                .attr('font-weight', 'bold')
+                .text('Unempoyment rating');
 
-    bar.call(d3.axisBottom(x_axis)
-        .tickSize(13)
-        .tickFormat(function(x, i) {
-            var floatNumber = d3.format(".1f");
-            return i == 6 ? '' : i == 0 ? '0.0%' : floatNumber(s_ize[i]/0.45)+'%'; })
-        .tickValues(s_ize))
-        .select('.domain')
-        .remove();
+        bar.call(d3.axisBottom(x_axis)
+                .tickSize(13)
+                .tickFormat(function(x, i) {
+                        var floatNumber = d3.format(".1f");
+                        return i == 6 ? '' : i == 0 ? '0.0%' : floatNumber(s_ize[i]/0.45)+'%'; })
+                .tickValues(s_ize))
+                .select('.domain')
+                .remove();
 }
 
 function clickOnState(d) {
-    chosenStateId = d.id;
-    drawRankingChart(currentYear,"county",svgRanking)
-
-    if (d3.select('.background').node() === this) return resetOnCounty();
-    if (active.node() === this) return resetOnCounty();
-    active.classed("active", false);
-    active = d3.select(this).classed("active", true);
-
-    var bounds = path.bounds(d),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = 0.5 / Math.max(dx / width, dy / height),
-        translate = [width * 0.5 - scale * x, height * 0.22 - scale * y];
-    state_map.transition()
-        .duration(750)
-        .style("stroke-width", 1.5 / scale + "px")
-        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-    state_map.selectAll(".county_borders")
-        .transition()
-        .remove();
-
-    state_map.append("path")
-        .datum(topojson.mesh(globalUS, globalUS.objects.counties, function(a, b) {
-            return  d.id == Math.floor(a.id/1000) && a !== b ; }))
-        .transition()
-        .duration(750)
-        .attr("id", "county-borders")
-        .attr("class", "county_borders")
-        .attr("d", path)
-        .style("stroke", "#e3e3e3")
-        .style("stroke-width", ".3px")
-    ;
-
-    state_map.selectAll("path")
-        .on("mouseover", function (d) {
-            console.log(d.id);
-            chosenCountyId = d.id;
-            drawSelectCounty(svgChosenCounty);
-            
-            var county_bounds = path.bounds(d),
-                county_dx = county_bounds[1][0] - county_bounds[0][0],
-                county_dy = county_bounds[1][1] - county_bounds[0][1],
-                county_x = (county_bounds[0][0] + county_bounds[1][0]) / 2,
-                county_y = (county_bounds[0][1] + county_bounds[1][1]) / 2;
-            var rect_width = 0;
-            if (id_to_countyName.has(d.id))
-            {
-                rect_width = id_to_countyName.get(d.id).length;
-                state_map.append("rect")
-                    .attr("x", county_x+4)
-                    .attr("y", county_y-13)
-                    .attr("width", rect_width*2)
-                    .attr("height", 8)
-                    .style("opacity",0.3)
-                    .attr("class", "county_label1")
-                    .style("fill", "#e3e3e3")
-                    .style("stroke", "grey");
-
-                state_map.append("text")
-                    .attr("transform", function(d){return "translate("+(county_x+8)+","+(county_y-8)+")"})
-                    .text(id_to_countyName.get(d.id))
-                    .attr("class", "county_label2")
-                    .style("fill", "rgb(203, 214, 0)")
-                    .attr("dy", ".35em")
-                    .style("font-size", "3.5px");
-            }
-            if (d.id > 1000)
-            {
-                $(".county-"+d.id).css("fill","orange");
-            }
-        })
-        .on("mouseout", function (d) {
-            state_map.select(".county_label1").remove();
-            state_map.select(".county_label2").remove();
-            if (d.id > 1000)
-            {
+//        console.log("click on state");
+        chosenStateId = d.id;
+        drawRankingChart(currentYear,"county",svgRanking)
+        
+        $(".state-"+d.id).each(function()
+        {
                 $(this).css("fill",$(this).data("fill"));
-            }
-        })
+        });
+        
+
+        if (d3.select('.background').node() === this) return resetOnCounty();
+        if (active.node() === this) return resetOnCounty();
+        active.classed("active", false);
+        active = d3.select(this).classed("active", true);
+
+        var bounds = path.bounds(d),
+                dx = bounds[1][0] - bounds[0][0],
+                dy = bounds[1][1] - bounds[0][1],
+                x = (bounds[0][0] + bounds[1][0]) / 2,
+                y = (bounds[0][1] + bounds[1][1]) / 2,
+                scale = 0.5 / Math.max(dx / width, dy / height),
+                translate = [width * 0.5 - scale * x, height * 0.22 - scale * y];
+        state_map.transition()
+                .duration(450)
+                .style("stroke-width", 1.5 / scale + "px")
+                .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+        state_map.selectAll(".county_borders")
+                .transition()
+                .remove();
+
+        state_map.append("path")
+                .datum(topojson.mesh(globalUS, globalUS.objects.counties, function(a, b) {
+                        return  d.id == Math.floor(a.id/1000) && a !== b ; }))
+                .transition()
+                .duration(450)
+                .attr("id", "county-borders")
+                .attr("class", "county_borders")
+                .attr("d", path)
+                .style("stroke", "#e3e3e3")
+                .style("stroke-width", ".3px")
+        ;
+
+        state_map.selectAll("path")
+                .on("mouseover", function (d) {                        
+                        var county_bounds = path.bounds(d),
+                            county_dx = county_bounds[1][0] - county_bounds[0][0],
+                            county_dy = county_bounds[1][1] - county_bounds[0][1],
+                            county_x = (county_bounds[0][0] + county_bounds[1][0]) / 2,
+                            county_y = (county_bounds[0][1] + county_bounds[1][1]) / 2;
+                        var rect_width = 0;
+                        if (id_to_countyName.has(d.id))
+                        {
+                                rect_width = id_to_countyName.get(d.id).length;
+                                state_map.append("rect")
+                                        .attr("x", county_x+4)
+                                        .attr("y", county_y-13)
+                                        .attr("width", rect_width*2)
+                                        .attr("height", 8)
+                                        .style("opacity",0.3)
+                                        .attr("class", "county_label1")
+                                        .style("fill", "#e3e3e3")
+                                        .style("stroke", "grey");
+
+                                state_map.append("text")
+                                        .attr("transform", function(d){return "translate("+(county_x+8)+","+(county_y-8)+")"})
+                                        .text(id_to_countyName.get(d.id))
+                                        .attr("class", "county_label2")
+                                        .style("fill", "rgb(203, 214, 0)")
+                                        .attr("dy", ".35em")
+                                        .style("font-size", "3.5px");
+                        }
+                        if (d.id > 1000)
+                        {
+                            if (barLock == false)
+                            {
+                                chosenCountyId = d.id;
+                                drawSelectCounty(svgChosenCounty);
+                            }
+                            
+                            $(".county-"+d.id).css("fill","orange");
+                        }
+                })
+                .on("mouseout", function (d) {
+                        state_map.select(".county_label1").remove();
+                        state_map.select(".county_label2").remove();
+                        if (d.id > 1000 && d.id != lastClickedCountyId)
+                        {
+                                $(this).css("fill",$(this).data("fill"));
+                        }
+                })
+                
+        var cancelButton = d3
+            .select("svg")
+            .append("circle")
+            .attr("class", "redButton")
+            .style("fill", "red")
+            .style("opacity", 0.7)
+            .attr("cx", 100)
+            .attr("cy", 400)
+            .attr("r", 30)
+            .on("click", resetOnCounty);
+}
+
+function selectCounty(d) {
+    console.log("select");
+    console.log(barLock);
+    countyCart.add(d.id);
+    if (barLock == false)
+    {
+        lastClickedCountyId = d.id;
+        barLock = true;
+        lastCountyObj = $(this);
+        $(".county-"+d.id).css("fill","orange");
+        
+    }
+    else
+    {
+        if (d.id == lastClickedCountyId)
+        {
+            lastClickedCountyId = -1;
+            barLock = false;
+            console.log($(this));
+            $(this).css("fill",$(this).data("fill"));
+        }
+        else 
+        {
+            lastCountyObj.css("fill",lastCountyObj.data("fill"));
+            $(".county-"+d.id).css("fill","orange");
+            lastCountyObj = $(this);
+            lastClickedCountyId = d.id;
+        }
+    }
+    
+    chosenCountyId = d.id;
+    drawSelectCounty(svgChosenCounty);
+
 }
 
 function resetOnCounty(d) {
+        
+        
 
-    active.classed("active", false);
-    active = d3.select(null);
+        active.classed("active", false);
+        active = d3.select(null);
 
-    state_map.transition()
-        .delay(100)
-        .duration(750)
-        .style("stroke-width", "1.5px")
-        .attr('transform', 'translate('+margin.left+','+margin.top+')');
+        state_map.transition()
+//        .delay(100)
+                .duration(450)
+                .style("stroke-width", "1.5px")
+                .attr('transform', 'translate('+margin.left+','+margin.top+')');
 
-    state_map.selectAll(".county_borders")
-        .transition()
-        .delay(100)
-        .duration(750)
-        .remove();
+        state_map.selectAll(".county_borders")
+                .transition()
+//        .delay(100)
+                .duration(450)
+                .remove();
+        svg.select(".redButton")
+            .transition()
+            .delay(300)
+            .duration(300)
+            .remove();
 }
 
 
@@ -294,30 +358,30 @@ function resetOnCounty(d) {
 var data = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
 // Step
 var sliderStep = d3
-    .sliderBottom()
-    .min(d3.min(data))
-    .max(d3.max(data))
-    .width(0.65*width)
-    .tickFormat(d3.format('d'))
-    .ticks(9)
-    .step(1)
-    .default(2010)
-    .on('onchange', year => {
-        //d3.select('p#value-step').text(d3.format('d')(val));
-        //drawMap(year);
-        currentYear = year;
-        changeData(year);
-        buildPercetageChart();
+        .sliderBottom()
+        .min(d3.min(data))
+        .max(d3.max(data))
+        .width(0.65*width)
+        .tickFormat(d3.format('d'))
+        .ticks(9)
+        .step(1)
+        .default(2010)
+        .on('onchange', year => {
+                //d3.select('p#value-step').text(d3.format('d')(val));
+                //drawMap(year);
+                currentYear = year;
+                changeData(year);
+                buildPercetageChart();
 
-    });
+        });
 
 var gStep = d3
-    .select('div#slider-step')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', 100)
-    .append('g')
-    .attr('transform', 'translate('+ 0.3*width + ',30)');
+        .select('div#slider-step')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate('+ 0.3*width + ',30)');
 
 gStep.call(sliderStep);
 
@@ -326,234 +390,244 @@ gStep.call(sliderStep);
 
 
 function getXScale(objectList, chart_catogary, zoomRate = 1){
-    var maxRate = 0;
-    if(chart_catogary == "county")
-        maxRate = objectList[0].county_rate;
-    else
-        maxRate = objectList[0].state_rate;
+        var maxRate = 0;
+        if(chart_catogary == "county")
+                maxRate = objectList[0].county_rate;
+        else
+                maxRate = objectList[0].state_rate;
 
-    // var scale = d3.scaleLinear()
-    //     .domain([0, zoomRate * maxRate])
-    //     .range([0, zoomRate * 0.3*chartWidth]);
-    var scale = d3.scaleLinear()
-        .domain([0, 25])
-        .range([0, zoomRate * 0.5*chartWidth]);
-    return scale;
+        // var scale = d3.scaleLinear()
+        //     .domain([0, zoomRate * maxRate])
+        //     .range([0, zoomRate * 0.3*chartWidth]);
+        var scale = d3.scaleLinear()
+                .domain([0, 25])
+                .range([0, zoomRate * 0.5*chartWidth]);
+        return scale;
 }
 
 function getYScale(objectList, chart_catogary){
-    var scale = d3.scaleBand()
-        .domain(objectList.map(function (d) {
-            if(chart_catogary == "county")
-                return d.county_name;
-            else if(chart_catogary == "state")
-                return d.state_name;
-        }))
-        .range([ offsetBetweenBarXAxis, offsetBetweenBarXAxis+barHeight + (objectList.length-1) * (barHeight+ offsetBetweenBar)]);
-    return scale;
+        var scale = d3.scaleBand()
+                .domain(objectList.map(function (d) {
+                        if(chart_catogary == "county")
+                                return d.county_name;
+                        else if(chart_catogary == "state")
+                                return d.state_name;
+                }))
+                .range([ offsetBetweenBarXAxis, offsetBetweenBarXAxis+barHeight + (objectList.length-1) * (barHeight+ offsetBetweenBar)]);
+        return scale;
 }
 
 function setTitle(title, text) {
-    d3.select(title).text(text);
+        d3.select(title).text(text);
 }
 
 function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], sliceCount = 20) {
-    if(chart_catogary == "county")
-        setTitle("#ranking_title", "Unemployment Rate:")
-    else
-        setTitle("#ranking_title", "Unemployment Rate: USA Top "+ sliceCount.toString());
-    var objectList;
-
-    if(dataList.length != 0)
-        objectList = dataList;
-    else{
-        if(chart_catogary == "state"){
-            objectList = getStateList(year);
-        }
-        else{
-            objectList = getCountyList(year);
-        }
-        objectList.sort((a,b)=>{
-            if(chart_catogary == "county")
-                return b.county_rate - a.county_rate;
-            else
-                return b.state_rate - a.state_rate;
-        })
-        objectList = objectList.slice(0,sliceCount);
-    }
-
-    svg2.selectAll("*").remove();
-    var xScale = getXScale(objectList, chart_catogary);
-    var xAxisScale = getXScale(objectList, chart_catogary, 1);
-    var yScale = getYScale(objectList, chart_catogary);
-
-    var yAxis =d3.axisLeft()
-        .scale(yScale)
-        .tickSize(6);
-
-    var xAxis =d3.axisTop()
-        .scale(xAxisScale)
-        .tickSize(4)
-        .ticks(6)
-        .tickFormat(d3.format("0.1f"));
-
-    var bar = svg2.selectAll(".bar")
-        .data(objectList)
-        .enter().append("g")
-        .attr("class", "bar");
-
-    bar.append("rect")
-        .attr('fill', '#09c')
-        .attr('width', function (d) {
-            return 0;
-        })
-        .attr('height', barHeight)
-        .attr('x', yAxisOffset)
-        .attr('y', function(d,i){
-            return (i) * (barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + xAxisOffset;
-        })
-        .on("mouseover", function(d) {
-            var name = "";
-            var id;
-            if(chart_catogary == "state"){
-                name = d.state_name;
-                id = d.state_id;
-            }
-            else{
-                name = d.county_name;
-                id = d.county_id;
-            }
-            div.transition()
-                .duration(200)
-                .style("opacity", .9);
-            var rank = getChosenRank(id,chart_catogary);
-            var newHtml = "<p>"+ name +"</p><p>Rank:    "+rank.toString()+"</p>";
-            div.html(newHtml)
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-        })
-        .on("mouseout", function(d) {
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });
-
-    bar.append("text")
-        .text(function (d) {
-            if(chart_catogary == "county")
-                return formatPercent(d.county_rate);
-            else
-                return formatPercent(d.state_rate);
-        })
-        .attr('fill', '#000')
-        .attr('font-size', "10pt")
-        .attr('x', function (d,i) {
-            return yAxisOffset+10;
-        })
-        .attr('y', function (d,i) {
-            return i*(barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + 4/5 * barHeight+ xAxisOffset;
-        });
-
-    bar.selectAll("rect").transition().duration(1500).attr("width", function(d) {
         if(chart_catogary == "county")
-            return xScale(d.county_rate);
+                setTitle("#ranking_title", "Unemployment Rate:")
         else
-            return xScale(d.state_rate);
-    });
+                setTitle("#ranking_title", "Unemployment Rate: USA Top "+ sliceCount.toString());
+        var objectList;
 
-    bar.selectAll("text").transition().duration(1500)
-        .attr("x", function(d) {
-            if(chart_catogary == "county")
-                return xScale(d.county_rate)+yAxisOffset+10;
-            else
-                return xScale(d.state_rate)+yAxisOffset+10;
-        })
-        .text(function (d) {
+        if(dataList.length != 0)
+                objectList = dataList;
+        else{
+                if(chart_catogary == "state"){
+                        objectList = getStateList(year);
+                }
+                else{
+                        objectList = getCountyList(year);
+                }
+                objectList.sort((a,b)=>{
+                        if(chart_catogary == "county")
+                                return b.county_rate - a.county_rate;
+                        else
+                                return b.state_rate - a.state_rate;
+                })
+                objectList = objectList.slice(0,sliceCount);
+        }
 
-            if(chart_catogary == "county")
-                return d.county_rate + "%";
-            else
-                return d.state_rate + "%";
+        svg2.selectAll("*").remove();
+        var xScale = getXScale(objectList, chart_catogary);
+        var xAxisScale = getXScale(objectList, chart_catogary, 1);
+        var yScale = getYScale(objectList, chart_catogary);
+
+        var yAxis =d3.axisLeft()
+                .scale(yScale)
+                .tickSize(6);
+
+        var xAxis =d3.axisTop()
+                .scale(xAxisScale)
+                .tickSize(4)
+                .ticks(6)
+                .tickFormat(d3.format("0.1f"));
+
+        var bar = svg2.selectAll(".bar")
+                .data(objectList)
+                .enter().append("g")
+                .attr("class", "bar");
+
+        bar.append("rect")
+                .attr('fill', '#09c')
+                .attr('width', function (d) {
+                        return 0;
+                })
+                .attr('height', barHeight)
+                .attr('x', yAxisOffset)
+                .attr('y', function(d,i){
+                        return (i) * (barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + xAxisOffset;
+                })
+                .on("mouseover", function(d) {
+                        var name = "";
+                        var id;
+                        if(chart_catogary == "state"){
+                                name = d.state_name;
+                                id = d.state_id;
+                        }
+                        else{
+                                name = d.county_name;
+                                id = d.county_id;
+                        }
+                        div.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                        var rank = getChosenRank(id,chart_catogary);
+                        var newHtml = "<p>"+ name +"</p><p>Rank:    "+rank.toString()+"</p>";
+                        div.html(newHtml)
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                        div.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                });
+
+        bar.append("text")
+                .text(function (d) {
+                        if(chart_catogary == "county")
+                                return formatPercent(d.county_rate);
+                        else
+                                return formatPercent(d.state_rate);
+                })
+                .attr('fill', '#000')
+                .attr('font-size', "10pt")
+                .attr('x', function (d,i) {
+                        return yAxisOffset+10;
+                })
+                .attr('y', function (d,i) {
+                        return i*(barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + 4/5 * barHeight+ xAxisOffset;
+                });
+
+        bar.selectAll("rect").transition().duration(1500).attr("width", function(d) {
+                if(chart_catogary == "county")
+                        return xScale(d.county_rate);
+                else
+                        return xScale(d.state_rate);
         });
 
-    svg2.append("g")
-        .attr("class", "axis")
-        .call(xAxis)
-        .attr("transform", "translate(" + yAxisOffset + "," + xAxisOffset+")");
+        bar.selectAll("text").transition().duration(1500)
+                .attr("x", function(d) {
+                        if(chart_catogary == "county")
+                                return xScale(d.county_rate)+yAxisOffset+10;
+                        else
+                                return xScale(d.state_rate)+yAxisOffset+10;
+                })
+                .text(function (d) {
 
-    svg2.append("g")
-        .attr("class", "axis")
-        .call(yAxis)
-        .attr("transform", "translate(" + yAxisOffset + "," + xAxisOffset+")");
+                        if(chart_catogary == "county")
+                                return d.county_rate + "%";
+                        else
+                                return d.state_rate + "%";
+                });
+
+        svg2.append("g")
+                .attr("class", "axis")
+                .call(xAxis)
+                .attr("transform", "translate(" + yAxisOffset + "," + xAxisOffset+")");
+
+        svg2.append("g")
+                .attr("class", "axis")
+                .call(yAxis)
+                .attr("transform", "translate(" + yAxisOffset + "," + xAxisOffset+")");
 
 }
 
 function drawSelectCounty(svg) {
-    if(chosenCountyId == 0)
-        return;
-    setTitle("#chosen_county_title", id_to_countyName.get(chosenCountyId));
-    svg.selectAll("*").remove();
-    var countyList = getChosenCounty(currentYear, chosenCountyId);
-    drawRankingChart(currentYear,"county",svg,countyList)
+        if(chosenCountyId == 0)
+                return;
+        setTitle("#chosen_county_title", id_to_countyName.get(chosenCountyId));
+        svg.selectAll("*").remove();
+        var countyList = getChosenCounty(currentYear, chosenCountyId);
+        drawRankingChart(currentYear,"county",svg,countyList)
 }
 
 function getCountyList(year ) {
-    var countyList = [];
-    for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
-        countyList.push(item);
-    }
-    return countyList;
+        var countyList = [];
+        for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
+                countyList.push(item);
+        }
+        return countyList;
 }
 
 function getChosenCounty(year, countyID) {
-    var countyList = [];
-    for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
-        if(item.county_id == countyID) {
-            countyList.push(item);
-            break;
+        var countyList = [];
+        for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
+                if(item.county_id == countyID) {
+                        countyList.push(item);
+                        break;
+                }
         }
-    }
-    return countyList;
+        return countyList;
 }
 function getChosenRank(id, catogary = "state") {
-    var tmplist;
-    var rank = 0;
-    if(catogary == "county") {
-        tmplist = getCountyList(currentYear);
-    }
-    else{
-        tmplist = getStateList(currentYear);
-    }
-    tmplist.sort((a,b)=>{
-        if(catogary == "county")
-            return b.county_rate - a.county_rate;
-        else
-            return b.state_rate - a.state_rate;
-    })
-    for(var i=0;i<tmplist.length;i++)
-    {
+        var tmplist;
+        var rank = 0;
         if(catogary == "county") {
-            if(tmplist[i].county_id == id)
-            {
-                rank = i;
-                break;
-            }
+                tmplist = getCountyList(currentYear);
         }
         else{
-            if(tmplist[i].state_id == id)
-            {
-                rank = i;
-                break;
-            }
+                tmplist = getStateList(currentYear);
         }
-    }
-    return rank+1;
+        tmplist.sort((a,b)=>{
+                if(catogary == "county")
+                        return b.county_rate - a.county_rate;
+                else
+                        return b.state_rate - a.state_rate;
+        })
+        for(var i=0;i<tmplist.length;i++)
+        {
+                if(catogary == "county") {
+                        if(tmplist[i].county_id == id)
+                        {
+                                rank = i;
+                                break;
+                        }
+                }
+                else{
+                        if(tmplist[i].state_id == id)
+                        {
+                                rank = i;
+                                break;
+                        }
+                }
+        }
+        return rank+1;
 }
 function getStateList(year) {
-    var stateList = [];
-    year_state_rate.get(parseInt(year)).forEach(function (value, key, map) {
-        var tmpstate = new StateObject(key, stateCodesToName[key], value);
-        stateList.push(tmpstate);
-    });
-    return stateList;
+        var stateList = [];
+        year_state_rate.get(parseInt(year)).forEach(function (value, key, map) {
+                var tmpstate = new StateObject(key, stateCodesToName[key], value);
+                stateList.push(tmpstate);
+        });
+        return stateList;
 }
+
+function mouseOverState(d){
+    $(".state-"+d.id).css("fill","orange");
+ }
+ function mouseOutState(d){
+    
+    $(".state-"+d.id).each(function(){
+            $(this).css("fill",$(this).data("fill"));
+      });
+ }
