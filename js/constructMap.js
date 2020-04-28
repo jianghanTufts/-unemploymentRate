@@ -398,7 +398,9 @@ function resetOnCounty(d) {
             .duration(300)
             .remove();
 
+        barLock = false;
         chosenCountyId = 0;
+        chosenStateId = 0;
         changeData(currentYear);
 }
 
