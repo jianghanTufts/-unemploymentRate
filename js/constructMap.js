@@ -11,9 +11,9 @@ var margin = {
         right:10
 }
 //chart's value
-var chartWidth = 800;
-var chartHeight = 500;
-var barHeight = 15;
+var chartWidth = pageWidth * 0.3;//800
+var chartHeight = 0.2 *pageHeight ;//500
+var barHeight = (15/500) *chartHeight ;
 var yAxisOffset = 150;
 var xAxisOffset = 50;
 var offsetBetweenBar = 5;
@@ -60,7 +60,7 @@ var currentYear = "2010";
 //the global variable of the chosen state and county
 //the value "1" is for testing, it should be set to 0 by default
 var chosenStateId = 1;
-var chosenCountyId = 1001;
+var chosenCountyId = 0;
 var lastClickedCountyId = -1;
 var lastCountyObj;
 var countries = new Map();
@@ -129,10 +129,14 @@ function changeData(year = "2010"){
                         });
 
         });
-        if(chosenStateId == 0)
-                drawRankingChart(year.toString(), "state", svgRanking);
-        else
-                drawRankingChart(year.toString(), "county", svgRanking);
+        if(chosenStateId == 0) {
+            drawRankingChart(year.toString(), "state", svgRanking);
+            drawSelectCounty(svgChosenCounty);
+        }
+        else {
+            drawRankingChart(year.toString(), "county", svgRanking);
+            drawSelectCounty(svgChosenCounty);
+        }
 }
 
 function buildPercetageChart() {
@@ -393,6 +397,9 @@ function resetOnCounty(d) {
             .delay(300)
             .duration(300)
             .remove();
+
+        chosenCountyId = 0;
+        changeData(currentYear);
 }
 
 
@@ -460,8 +467,11 @@ function getYScale(objectList, chart_catogary){
 }
 
 function setTitle(title, text) {
-        d3.select(title).text(text);
+        d3.select(title).text(text)
+            .attr("font-size",10);
 }
+
+
 
 function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], sliceCount = 20) {
         if(chart_catogary == "county")
@@ -595,8 +605,11 @@ function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], s
 }
 
 function drawSelectCounty(svg) {
-        if(chosenCountyId == 0)
-                return;
+        if(chosenCountyId == 0) {
+            setTitle("#chosen_county_title", "");
+            svg.selectAll("*").remove();
+            return;
+        }
         setTitle("#chosen_county_title", id_to_countyName.get(chosenCountyId));
         svg.selectAll("*").remove();
         var countyList = getChosenCounty(currentYear, chosenCountyId);
