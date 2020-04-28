@@ -106,3 +106,6 @@ html,body{
      border-radius: 8px;
      pointer-events: none;
  }
+.line-chart{width:800px; height:400px}
+
+

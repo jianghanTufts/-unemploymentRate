@@ -36,7 +36,7 @@ let svgChosenCounty = d3.select("#county_select")
         .attr('width', chartWidth)
         .attr('height', chartHeight/5);
 
-var countyCart = new Set();
+var countyCart = new Array();
 var active = d3.select(null);
 var state_map = svg.append("g")
 
@@ -293,10 +293,52 @@ function clickOnState(d) {
             .on("click", resetOnCounty);
 }
 
+// function constructCartArray(id){
+//     // countyCart.add(id);
+//     line = new Array();
+//     for(y = 2010; y < 2019; y++){
+//         line.push(year_state_rate.get(y).get(id));
+//     }   
+//     countyCart.add(new countyYear(id_to_countyName[id], line));
+//     console.alert(1);
+// }
+
+function countyYear(name, arr){
+  this.name = name;
+  this.values = arr;
+}
+
 function selectCounty(d) {
-    console.log("select");
-    console.log(barLock);
-    countyCart.add(d.id);
+    // console.log("select");
+    // console.log(barLock);
+    
+    temp = new Array();
+    line = new Array();
+
+    let ids = "";
+    let idn = "";
+    
+    if(d.id < 10000){
+        ids = "0" + Math.floor(d.id/1000);
+    } else {
+        ids = "" + Math.floor(d.id/1000);
+    }
+    // console.log(idn);
+    for(var y = 2010; y < 2019; y++){
+        var sum = year_state_county.get(y.toString()).get(ids);
+        for(var i = 0, len = sum.length; i < len; i++){
+            if(sum[i].county_id === d.id){
+                temp.push(sum[i].county_rate);
+                line.push([y, sum[i].county_rate]);
+                break;
+            }
+        }
+    }
+    nameset.push(id_to_countyName["$" + d.id]);
+    countyCart.push(new countyYear(id_to_countyName["$" + d.id], temp));
+    dataset.push(line);
+    drawLineChart();
+
     if (barLock == false)
     {
         lastClickedCountyId = d.id;
@@ -561,7 +603,7 @@ function drawSelectCounty(svg) {
         drawRankingChart(currentYear,"county",svg,countyList)
 }
 
-function getCountyList(year ) {
+function getCountyList(year) {
         var countyList = [];
         for(item of year_state_county.get(year.toString()).get(format0d(chosenStateId))){
                 countyList.push(item);
