@@ -21,8 +21,8 @@ html,body{
 }
 .map-container{
     display: inline-block;
-    margin-left: 10%;
-    width: 80%;
+    margin-left: 0;
+    width: 98%;
     height: 80%;
 }
 .map-body{
@@ -106,3 +106,36 @@ html,body{
      border-radius: 8px;
      pointer-events: none;
  }
+.chart-container{
+    overflow-y: scroll;
+    height: 100%;
+    width: 99%;
+}
+.page-container{
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+.left-page{
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    padding-top: 56px;
+}
+.right-page{
+    position: fixed;
+    display: inline-block;
+    margin-left: 1px;
+    left: 65%;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding-top: 56px;
+ }
+header{
+    position: fixed;
+    width: 100%;
+}
