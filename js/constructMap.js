@@ -11,8 +11,8 @@ var margin = {
         right:10
 }
 //chart's value
-var chartWidth = pageWidth * 0.3;//800
-var chartHeight = 0.2 *pageHeight ;//500
+var chartWidth = 800;//800
+var chartHeight = 500 ;//500
 var barHeight = (15/500) *chartHeight ;
 var yAxisOffset = 150;
 var xAxisOffset = 50;
