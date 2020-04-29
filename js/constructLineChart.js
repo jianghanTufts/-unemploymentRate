@@ -58,6 +58,8 @@ function drawLineChart(){
     return d3.max(d, function(dd){return dd[1]});
   })
 
+
+
   var xScale = d3.scaleLinear()
                   .domain([2010, 2018])
                   .range([0, width - padding.left - padding.right]);
@@ -76,6 +78,19 @@ function drawLineChart(){
 
   var yAxis = d3.axisLeft()
                 .scale(yScale);
+  var focus = line_chart
+      .append('g')
+      .append('circle')
+      .style("fill", "none")
+      .attr("stroke", "black")
+      .attr('r', 8.5)
+      .style("opacity", 0);
+  var focusText = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
 
   line_chart.append('g')
     .attr('class', 'axis')
@@ -110,10 +125,8 @@ function drawLineChart(){
         .attr('font-size', "10pt")
         .attr('x', 50)
         .attr('y', 50);
-
       })
       .on("mouseout", function (d) {
-        
       });
 
 
@@ -136,8 +149,45 @@ function drawLineChart(){
       });
 
   }
-}
+  var bisect = d3.bisector(function(d) { return d.x; }).left;
+  line_chart
+      .append('rect')
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .attr('width', width)
+      .attr('height', height)
+      .on('mouseover', function(){
+        focus.style("opacity", 1)
+        focusText.style("opacity",1)
+      })
+      .on('mousemove', function(){
+        var x0 = xScale.invert(d3.mouse(this)[0]);
+        console.log(x0);
+        var i = parseInt(x0) - 1;
+        if(i<2010 || i>2018){
+          focus
+              .attr("cx", -100)
+              .attr("cy", -100)
+          focusText
+              .attr("x", -100)
+              .attr("y", -100)
+          return;
+        }
+        selectedData = dataset[0][i-2010]
+        focus
+            .attr("cx", xScale(selectedData[0])+50)
+            .attr("cy", yScale(selectedData[1])+50)
+        focusText
+            .html("x:" + selectedData[0] + "  -  " + "y:" + selectedData[1])
+            .attr("x", xScale(selectedData[0])+65)
+            .attr("y", yScale(selectedData[1])+50)
+      })
+      .on('mouseout', function(){
+        focus.style("opacity", 0)
+        focusText.style("opacity", 0)
+      });
 
+}
 
 // // d3 = require("d3@5", "d3-array@2")
 
