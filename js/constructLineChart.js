@@ -65,7 +65,7 @@ function drawLineChart(){
                   .range([0, width - padding.left - padding.right]);
 
   var yScale = d3.scaleLinear()
-                  .domain([0, max])
+                  .domain([0, max+1])
                   .range([height - padding.top - padding.bottom, 0]);
 
   // var svg = d3.select('body')
@@ -76,16 +76,90 @@ function drawLineChart(){
   var xAxis = d3.axisBottom()
                 .scale(xScale);
 
-  var yAxis = d3.axisLeft()
-                .scale(yScale);
+  // var yAxis = d3.axisLeft()
+  //               .scale(yScale);
+  var yAxis = g => g
+    .call(d3.axisLeft(yScale))
+    .call(g => g.select(".domain").remove())
+  // var focus = line_chart
+  //     .append('g')
+  //     .append('circle')
+  //     .style("fill", "none")
+  //     .attr("stroke", "black")
+  //     .attr('r', 8.5)
+  //     .style("opacity", 0);
+
   var focus = line_chart
+          .append('g')
+          .append('line')
+          .style("opacity", 0)
+          .attr("stroke-width", 1)
+          .attr("stroke", "orange");
+
+  var focusText1 = line_chart
       .append('g')
-      .append('circle')
-      .style("fill", "none")
-      .attr("stroke", "black")
-      .attr('r', 8.5)
-      .style("opacity", 0);
-  var focusText = line_chart
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText2 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText3 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText4 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText5 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText6 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText7 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText8 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText9 = line_chart
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+  var focusText10 = line_chart
       .append('g')
       .append('text')
       .style("opacity", 0)
@@ -117,17 +191,19 @@ function drawLineChart(){
       .attr('fill', 'none')
       .attr('id', idp++)
       .attr('stroke-width', 1)
-      .attr('stroke', 'green')
-      .on("mouseover", function (d) {
-        line_chart.append("text")
-        .text(nameset[i])
-        .attr('fill', '#000')
-        .attr('font-size', "10pt")
-        .attr('x', 50)
-        .attr('y', 50);
-      })
-      .on("mouseout", function (d) {
-      });
+      .attr("stroke-linecap", "round")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke", "steelblue");
+      // .on("mouseover", function (d) {
+      //   line_chart.append("text")
+      //   .text(nameset[i])
+      //   .attr('fill', '#000')
+      //   .attr('font-size', "10pt")
+      //   .attr('x', 50)
+      //   .attr('y', 50);
+      // })
+      // .on("mouseout", function (d) {
+      // });
 
 
     line_chart.append('g')
@@ -140,7 +216,7 @@ function drawLineChart(){
       .attr('transform', function(d){
         return 'translate(' + (xScale(d[0]) + padding.left) + ',' + (yScale(d[1]) + padding.top) + ')'
       })
-      .attr('fill', 'green')
+      .attr('fill', 'blue')
       .on("mouseover", function (d) {
           // body...
       })
@@ -149,6 +225,7 @@ function drawLineChart(){
       });
 
   }
+   
   var bisect = d3.bisector(function(d) { return d.x; }).left;
   line_chart
       .append('rect')
@@ -157,35 +234,405 @@ function drawLineChart(){
       .attr('width', width)
       .attr('height', height)
       .on('mouseover', function(){
-        focus.style("opacity", 1)
-        focusText.style("opacity",1)
+        if(dataset.length >= 1){
+          focus.style("opacity", 1)
+          focusText1.style("opacity",1)
+        }
+        if(dataset.length >= 2){
+          focusText2.style("opacity",1)
+        }
+        if(dataset.length >= 3){
+          focusText3.style("opacity",1)
+        }
+        if(dataset.length >= 4){
+          focusText4.style("opacity",1)
+        }
+        if(dataset.length >= 5){
+          focusText5.style("opacity",1)
+        }
+        if(dataset.length >= 6){
+          focusText6.style("opacity",1)
+        }
+        if(dataset.length >= 7){
+          focusText7.style("opacity",1)
+        }
+        if(dataset.length >= 8){
+          focusText8.style("opacity",1)
+        }
+        if(dataset.length >= 9){
+          focusText9.style("opacity",1)
+        }
+        if(dataset.length >= 10){
+          focusText10.style("opacity",1)
+        }
       })
       .on('mousemove', function(){
-        var x0 = xScale.invert(d3.mouse(this)[0]);
-        console.log(x0);
-        var i = parseInt(x0) - 1;
-        if(i<2010 || i>2018){
-          focus
-              .attr("cx", -100)
-              .attr("cy", -100)
-          focusText
-              .attr("x", -100)
-              .attr("y", -100)
-          return;
-        }
-        selectedData = dataset[0][i-2010]
-        focus
-            .attr("cx", xScale(selectedData[0])+50)
-            .attr("cy", yScale(selectedData[1])+50)
-        focusText
-            .html("x:" + selectedData[0] + "  -  " + "y:" + selectedData[1])
-            .attr("x", xScale(selectedData[0])+65)
-            .attr("y", yScale(selectedData[1])+50)
+
+          var x0 = xScale.invert(d3.mouse(this)[0]);
+
+          // console.log(x0);
+          var i = parseInt(x0 - 1);
+          if(i<2010 || i>2018){
+
+            if(dataset.length >= 1){
+              focus
+                  .attr("x1", -1000)
+                  .attr("y1", -1000)
+                  .attr("x2", -1000)
+                  .attr("y2", 1000)
+              focusText1
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+
+            if(dataset.length >= 2){
+              focusText2
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+            if(dataset.length >= 3){
+              focusText3
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+            if(dataset.length >= 4){
+              focusText4
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 5){
+              focusText5
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 6){
+              focusText6
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 7){
+              focusText7
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 8){
+              focusText8
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 9){
+              focusText9
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            if(dataset.length >= 10){
+              focusText10
+                  .attr("x", -100)
+                  .attr("y", -100)
+            }
+
+            return;
+          }
+
+          var lmin = Number.MAX_VALUE;
+          var lmax = Number.MIN_VALUE;
+
+          if(dataset.length >= 1){
+          
+            selectedData = dataset[0][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+
+            selectedData = dataset[0][i-2010];
+            focusText1
+                .html(nameset[0] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 2){
+            selectedData = dataset[1][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText2
+                .html(nameset[1] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 3){
+            selectedData = dataset[2][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText3
+                .html(nameset[2] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 4){
+            selectedData = dataset[3][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText4
+                .html(nameset[3] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 5){
+            selectedData = dataset[4][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText5
+                .html(nameset[4] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 6){
+            selectedData = dataset[5][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText6
+                .html(nameset[5] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 7){
+            selectedData = dataset[6][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText7
+                .html(nameset[6] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 8){
+            selectedData = dataset[7][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText8
+                .html(nameset[7] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 9){
+            selectedData = dataset[8][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText9
+                .html(nameset[8] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+          if(dataset.length >= 10){
+            selectedData = dataset[9][i-2010]
+
+            if(lmax < yScale(selectedData[1])+80){
+              lmax = yScale(selectedData[1])+80;
+            }
+            if(lmin > yScale(selectedData[1])+20){
+              lmin = yScale(selectedData[1])+20;
+            }
+
+            focus
+                .attr("x1", xScale(selectedData[0])+50)
+                .attr("x2", xScale(selectedData[0])+50)
+                .attr("y1", lmin)
+                .attr("y2", lmax)
+            
+            focusText10
+                .html(nameset[9] + ": " + selectedData[1])
+                .attr("x", xScale(selectedData[0])+50)
+                .attr("y", yScale(selectedData[1])+50)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 6)
+                .attr("text-anchor", "middle")
+          }
+
+
       })
       .on('mouseout', function(){
-        focus.style("opacity", 0)
-        focusText.style("opacity", 0)
+        if(dataset.length >= 1){
+          focus.style("opacity", 0)
+          focusText1.style("opacity", 0)
+        }
+        if(dataset.length >= 2){
+          focusText2.style("opacity", 0)
+        }
+        if(dataset.length >= 3){
+          focusText3.style("opacity", 0)
+        }
+        if(dataset.length >= 4){
+          focusText4.style("opacity", 0)
+        }
+        if(dataset.length >= 5){
+          focusText5.style("opacity", 0)
+        }
+        if(dataset.length >= 6){
+          focusText6.style("opacity", 0)
+        }
+        if(dataset.length >= 7){
+          focusText7.style("opacity", 0)
+        }
+        if(dataset.length >= 8){
+          focusText8.style("opacity", 0)
+        }
+        if(dataset.length >= 9){
+          focusText9.style("opacity", 0)
+        }
+        if(dataset.length >= 10){
+          focusText10.style("opacity", 0)
+        }
       });
+
+    // }
 
 }
 

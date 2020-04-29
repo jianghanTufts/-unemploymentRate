@@ -315,6 +315,10 @@ function countyYear(name, arr){
 function selectCounty(d) {
     // console.log("select");
     // console.log(barLock);
+
+    if(countyCart.length == 10){
+        alert("Up to ten counties can be compared at the same time!");
+    }
     
     temp = new Array();
     line = new Array();
