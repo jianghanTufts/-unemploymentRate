@@ -59,7 +59,7 @@ var currentYear = "2010";
 
 //the global variable of the chosen state and county
 //the value "1" is for testing, it should be set to 0 by default
-var chosenStateId = 1;
+var chosenStateId = 0;
 var chosenCountyId = 0;
 var lastClickedCountyId = -1;
 var lastCountyObj;
@@ -72,7 +72,7 @@ d3.queue()
                 drawMap();
                 buildPercetageChart();
                 drawRankingChart("2010", "state",svgRanking);
-                drawSelectCounty(svgChosenCounty);
+                //drawSelectCounty(svgChosenCounty);
         });
 
 
@@ -131,7 +131,7 @@ function changeData(year = "2010"){
         });
         if(chosenStateId == 0) {
             drawRankingChart(year.toString(), "state", svgRanking);
-            drawSelectCounty(svgChosenCounty);
+           // drawSelectCounty(svgChosenCounty);
         }
         else {
             drawRankingChart(year.toString(), "county", svgRanking);
@@ -405,7 +405,8 @@ function resetOnCounty(d) {
         barLock = false;
         chosenCountyId = 0;
         chosenStateId = 0;
-        changeData(currentYear);
+        drawRankingChart(currentYear, "state",svgRanking);
+        drawSelectCounty(svgChosenCounty);
 }
 
 
