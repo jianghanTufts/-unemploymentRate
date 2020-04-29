@@ -6,6 +6,7 @@ const line_chart = d3.select("#line-chart")
 // 图表的宽度和高度
 var width = 400;
 var height = 400;
+
 // 预留给轴线的距离
 var padding = { top: 50, right: 50, bottom: 50, left: 50 };
 
@@ -42,7 +43,26 @@ nameset = new Array();
 
 // data = new Data();
 
-drawLineChart();
+// drawLineChart();
+
+// remind words
+
+var welcomeText = line_chart
+  .append('g')
+  .append('text')
+  .attr("text-anchor", "left")
+  .attr("alignment-baseline", "middle");
+
+welcomeText
+  .html("No county selected, please select the county first!")
+  .attr("x", 200)
+  .attr("y", 200)
+  .attr("font-family", "sans-serif")
+  .attr("font-size", 16)
+  .attr("text-anchor", "middle")
+
+
+
 
 let idc = 0;
 let idp = 0;
@@ -193,7 +213,7 @@ function drawLineChart(){
       .attr('stroke-width', 1)
       .attr("stroke-linecap", "round")
       .attr("stroke-linejoin", "round")
-      .attr("stroke", "steelblue");
+      .attr("stroke", "green");
       // .on("mouseover", function (d) {
       //   line_chart.append("text")
       //   .text(nameset[i])
@@ -211,17 +231,11 @@ function drawLineChart(){
       .data(dataset[i])
       .enter()
       .append('circle')
-      .attr('r', 2)
-      .attr('id', idc++)
+      .attr('r', 1.5)
+      .attr("stroke", "green")
+      // .attr('id', idc++)
       .attr('transform', function(d){
         return 'translate(' + (xScale(d[0]) + padding.left) + ',' + (yScale(d[1]) + padding.top) + ')'
-      })
-      .attr('fill', 'blue')
-      .on("mouseover", function (d) {
-          // body...
-      })
-      .on("mouseout", function (d) {
-          // body...
       });
 
   }
@@ -234,6 +248,10 @@ function drawLineChart(){
       .attr('width', width)
       .attr('height', height)
       .on('mouseover', function(){
+        
+        d3.select("#line-chart").selectAll('path').attr('opacity', 0.5);
+        d3.select("#line-chart").selectAll('circle').attr('opacity', 0.5);
+
         if(dataset.length >= 1){
           focus.style("opacity", 1)
           focusText1.style("opacity",1)
@@ -599,6 +617,10 @@ function drawLineChart(){
 
       })
       .on('mouseout', function(){
+
+        d3.select("#line-chart").selectAll('path').attr('opacity', 1);
+        d3.select("#line-chart").selectAll('circle').attr('opacity', 1);
+
         if(dataset.length >= 1){
           focus.style("opacity", 0)
           focusText1.style("opacity", 0)
