@@ -108,8 +108,6 @@ html,body{
 }
 
 
-=======
- }
 .chart-container{
     overflow-y: scroll;
     height: 100%;
@@ -146,4 +144,3 @@ header{
     width: 100%;
     z-index: 100;
 }
->>>>>>> e18de29379543639079117ba440efc18caf8ca18
