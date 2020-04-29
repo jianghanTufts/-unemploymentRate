@@ -1,8 +1,8 @@
 var pageWidth = $("body").width();
-var pageHeight = $("body").width()
-var svg = d3.select("svg"),
-        width = pageWidth * 0.7,
-        height = pageHeight * 0.8;
+var pageHeight = $(".left-page").height()
+var svg = d3.select("#main-map"),
+        width = pageWidth * 0.65,
+        height = pageHeight * 0.6;
 
 var margin = {
         top: 10,
