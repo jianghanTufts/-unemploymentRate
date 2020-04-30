@@ -9,14 +9,15 @@ var margin = {
 var width = pageWidth * 0.65 - margin.left,
     height = pageHeight * 0.8;
 
-
+console.log(width)
+console.log(height)
 var state_map = d3.select("#main-map")
             .append('g')
             .attr('width', width)
             .attr('height', height)
             .attr('transform', 'translate('+margin.left+','+margin.top+')')
-            .attr('cx', 100)
-            .attr('cy', 800)
+            .attr('cx', 100/836*width)
+            .attr('cy', 800/624*height)
 
 console.log(d3.select("#main-map"))
 
@@ -32,6 +33,7 @@ var offsetBetweenBarXAxis = 10;
 
 var format0d = d3.format("02d");
 var barLock = false;
+var ifCountyMode = false;
 
 var div = d3.select("#detail_info")
         .attr("class", "tooltip")
@@ -211,6 +213,7 @@ function buildPercetageChart() {
 }
 
 function clickOnState(d) {
+        ifCountyMode = true;
         console.log("click on state");
         chosenStateId = d.id;
         drawRankingChart(currentYear,"county",svgRanking)
@@ -286,7 +289,7 @@ function clickOnState(d) {
                                         .attr("dy", ".35em")
                                         .style("font-size", "3.5px");
                         }
-                        if (d.id > 1000)
+                        if (d.id > 1000 && ifCountyMode)
                         {
 //                            console.log(d3.select(".county-"+d.id).style('fill'));
                             currentCountyColor = d3.select(".county-"+d.id).style('fill');
@@ -433,7 +436,7 @@ function selectCounty(d) {
 function resetOnCounty(d) {
         
         
-
+        ifCountyMode = false
         active.classed("active", false);
         active = d3.select(null);
 
@@ -448,7 +451,7 @@ function resetOnCounty(d) {
 //        .delay(100)
                 .duration(450)
                 .remove();
-        d3.select(".redButton")
+        d3.selectAll(".redButton")
             .transition()
             .delay(300)
             .duration(300)
