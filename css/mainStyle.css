@@ -218,3 +218,8 @@ header{
     background-repeat: no-repeat;
     background-size: 30px 30px;
 }
+
+.chart_title{
+    font-size: 20px;
+    font-weight:bold;
+}
