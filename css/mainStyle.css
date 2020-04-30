@@ -190,3 +190,26 @@ header{
     width: 100%;
     z-index: 100;
 }
+
+.slider-container{
+    display:inline-block;
+}
+
+.slider-button {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    margin-left:100px;
+    border: none;
+}
+
+.slider-button-unpressed {
+    background: url(../img/icons/play-button-unpressed.png) no-repeat;
+    background-size: 30px 30px;
+}
+
+.slider-button-pressed {
+    background: url(../img/icons/play-button-pressed.png);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+}

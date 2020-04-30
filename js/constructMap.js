@@ -496,6 +496,26 @@ var gStep = d3
 gStep.call(sliderStep);
 
 
+$(".slider-button").click(function() {
+    $(".slider-button").removeClass("slider-button-unpressed");
+    $(".slider-button").addClass("slider-button-pressed");
+    time_travel(currentYear);
+});
+
+function time_travel(pos) {
+    $(".slider-button").prop("disabled", true);
+    setTimeout(function() {
+        sliderStep.value(pos);
+        if (pos < 2018) {
+            time_travel(++pos);
+        } else {
+            $(".slider-button").prop("disabled", false);
+            $(".slider-button").addClass("slider-button-unpressed");
+            $(".slider-button").removeClass("slider-button-pressed");
+        }
+    }, 500);
+}
+
 //draw chart
 
 
@@ -631,14 +651,14 @@ function drawRankingChart(year, chart_catogary = "state", svg2, dataList = [], s
                         return i*(barHeight + offsetBetweenBar) + offsetBetweenBarXAxis + 4/5 * barHeight+ xAxisOffset;
                 });
 
-        bar.selectAll("rect").transition().duration(1500).attr("width", function(d) {
+        bar.selectAll("rect").transition().duration(500).attr("width", function(d) {
                 if(chart_catogary == "county")
                         return xScale(d.county_rate);
                 else
                         return xScale(d.state_rate);
         });
 
-        bar.selectAll("text").transition().duration(1500)
+        bar.selectAll("text").transition().duration(500)
                 .attr("x", function(d) {
                         if(chart_catogary == "county")
                                 return xScale(d.county_rate)+yAxisOffset+10;
