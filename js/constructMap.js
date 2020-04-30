@@ -22,7 +22,7 @@ console.log(d3.select("#main-map"))
 
 
 //chart's value
-var chartWidth = 800;//800
+var chartWidth = pageWidth * 0.35 - margin.right;//800
 var chartHeight = 500 ;//500
 var barHeight = (15/500) *chartHeight ;
 var yAxisOffset = 150;
