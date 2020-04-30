@@ -69,6 +69,8 @@ welcomeText
 // let idc = 0;
 // let idp = 0;
 
+// let idArray;
+
 function drawLineChart(){
 
 
@@ -80,21 +82,25 @@ function drawLineChart(){
 
   // pre-process data
 
-  var dataset = new Array();
-  var nameset = new Array();
+  let dataset = new Array();
+  let nameset = new Array();
 
-  for (var k = countyCart.length - 1; k >= 0; k--) {
+  let idArray = countyCartColor.keys();
 
-    var temp = new Array();
-    var line = new Array();
+
+  for (var k = idArray.length - 1; k >= 0; k--) {
+
+    let temp = new Array();
+    let line = new Array();
 
     let ids = "";
     // let idn = "";
+    let currId = parseInt(idArray[k]);
 
-    if(countyCart[k] < 10000){
-        ids = "0" + Math.floor(countyCart[k]/1000);
+    if(currId < 10000){
+        ids = "0" + Math.floor(currId/1000);
     } else {
-        ids = "" + Math.floor(countyCart[k]/1000);
+        ids = "" + Math.floor(currId/1000);
     }
 
     // console.log("ids: " + ids);
@@ -105,16 +111,16 @@ function drawLineChart(){
 
     for(var y = 2010; y < 2019; y++){
         sum = year_state_county.get(y.toString()).get(ids);
-        console.log("sum: " + sum);
+        // console.log("sum: " + sum);
         for(var q = 0, len = sum.length; q < len; q++){
-            if(sum[q].county_id === countyCart[k]){
+            if(sum[q].county_id === currId){
                 temp.push(sum[q].county_rate);
                 line.push([y, sum[q].county_rate]);
                 break;
             }
         }
     }
-    nameset.push(id_to_countyName["$" + countyCart[k]]);
+    nameset.push(id_to_countyName["$" + currId]);
     dataset.push(line);
 
   }
