@@ -1,6 +1,12 @@
 var pageWidth = $("body").width();
 var pageHeight = $(".left-page").height()
-var width = pageWidth * 0.65,
+var margin = {
+    top: 10,
+    bottom: 10,
+    left: 100,
+    right:10
+};
+var width = pageWidth * 0.65 - margin.left,
     height = pageHeight * 0.8;
 
 
@@ -8,17 +14,13 @@ var state_map = d3.select("#main-map")
             .append('g')
             .attr('width', width)
             .attr('height', height)
-            .attr('cx', 300)
+            .attr('transform', 'translate('+margin.left+','+margin.top+')')
+            .attr('cx', 100)
             .attr('cy', 800)
 
 console.log(d3.select("#main-map"))
 
-var margin = {
-        top: 10,
-        bottom: 10,
-        left: 10,
-        right:10
-}
+
 //chart's value
 var chartWidth = 800;//800
 var chartHeight = 500 ;//500
