@@ -7,7 +7,7 @@ var margin = {
     right:10
 };
 var width = pageWidth * 0.65 - margin.left,
-    height = pageHeight * 0.8;
+    height = pageHeight * 0.6;
 
 console.log(width)
 console.log(height)
@@ -15,9 +15,9 @@ var state_map = d3.select("#main-map")
             .append('g')
             .attr('width', width)
             .attr('height', height)
-            .attr('transform', 'translate('+margin.left+','+margin.top+')')
-            .attr('cx', 100/836*width)
-            .attr('cy', 800/624*height)
+            .attr('transform', 'translate('+margin.left+','+ 0 +')')
+            // .attr('cx', 100/836*width)
+            // .attr('cy', 800/624*height)
 
 
 
