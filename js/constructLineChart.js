@@ -47,8 +47,10 @@ const yxAxis = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 
 // remind words
 
-let sum;
-let ids = "";
+// let sum;
+// let ids = "";
+// var dataset = new Array();
+// var nameset = new Array();
 
 var welcomeText = line_chart
   .append('g')
@@ -58,56 +60,61 @@ var welcomeText = line_chart
 
 welcomeText
   .html("No county selected, please select the county first!")
-  .attr("x", 200)
-  .attr("y", 200)
+  .attr("x", width/2)
+  .attr("y", height/5*2)
   .attr("font-family", "sans-serif")
-  .attr("font-size", 16)
+  .attr("font-size", 16*1.8)
   .attr("text-anchor", "middle")
 
-let idc = 0;
-let idp = 0;
+// let idc = 0;
+// let idp = 0;
 
 function drawLineChart(){
 
 
-  if(countyCart.length == 0){
+  if(countyCart.length < 1){
     return;
   }
+
+  var offset = 1.5;
 
   // pre-process data
 
   var dataset = new Array();
   var nameset = new Array();
 
-  for (var i = countyCart.length - 1; i >= 0; i--) {
+  for (var k = countyCart.length - 1; k >= 0; k--) {
 
     var temp = new Array();
     var line = new Array();
 
-    // let ids = "";
+    let ids = "";
     // let idn = "";
 
-    if(countyCart[i] < 10000){
-        ids = "0" + Math.floor(countyCart[i]/1000);
+    if(countyCart[k] < 10000){
+        ids = "0" + Math.floor(countyCart[k]/1000);
     } else {
-        ids = "" + Math.floor(countyCart[i]/1000);
+        ids = "" + Math.floor(countyCart[k]/1000);
     }
 
+    // console.log("ids: " + ids);
+    // console.log(countyCart);
 
     // console.log(ids);
     // console.log(idn);
 
     for(var y = 2010; y < 2019; y++){
         sum = year_state_county.get(y.toString()).get(ids);
-        for(var i = 0, len = sum.length; i < len; i++){
-            if(sum[i].county_id === countyCart[i]){
-                temp.push(sum[i].county_rate);
-                line.push([y, sum[i].county_rate]);
+        console.log("sum: " + sum);
+        for(var q = 0, len = sum.length; q < len; q++){
+            if(sum[q].county_id === countyCart[k]){
+                temp.push(sum[q].county_rate);
+                line.push([y, sum[q].county_rate]);
                 break;
             }
         }
     }
-    nameset.push(id_to_countyName["$" + countyCart[i]]);
+    nameset.push(id_to_countyName["$" + countyCart[k]]);
     dataset.push(line);
 
   }
@@ -254,7 +261,7 @@ function drawLineChart(){
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
       .attr('d', linePath(dataset[i]))
       .attr('fill', 'none')
-      .attr('id', idp++)
+      // .attr('id', idp++)
       .attr('stroke-width', 1)
       .attr("stroke-linecap", "round")
       .attr("stroke-linejoin", "round")
@@ -428,7 +435,7 @@ function drawLineChart(){
             focusText1
                 .html(nameset[0] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50-4*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -453,7 +460,7 @@ function drawLineChart(){
             focusText2
                 .html(nameset[1] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50-3*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -478,7 +485,7 @@ function drawLineChart(){
             focusText3
                 .html(nameset[2] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50-2*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -503,7 +510,7 @@ function drawLineChart(){
             focusText4
                 .html(nameset[3] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50-1*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -528,7 +535,7 @@ function drawLineChart(){
             focusText5
                 .html(nameset[4] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+0*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -553,7 +560,7 @@ function drawLineChart(){
             focusText6
                 .html(nameset[5] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+1*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -578,7 +585,7 @@ function drawLineChart(){
             focusText7
                 .html(nameset[6] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+2*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -603,7 +610,7 @@ function drawLineChart(){
             focusText8
                 .html(nameset[7] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+3*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -628,7 +635,7 @@ function drawLineChart(){
             focusText9
                 .html(nameset[8] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+4*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
@@ -653,7 +660,7 @@ function drawLineChart(){
             focusText10
                 .html(nameset[9] + ": " + selectedData[1])
                 .attr("x", xScale(selectedData[0])+50)
-                .attr("y", yScale(selectedData[1])+50)
+                .attr("y", yScale(selectedData[1])+50+5*offset)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 6)
                 .attr("text-anchor", "middle")
