@@ -491,14 +491,15 @@ var gStep = d3
         .attr('width', width)
         .attr('height', 100)
         .append('g')
-        .attr('transform', 'translate('+ 0.15*width + ',30)');
+        .attr('transform', 'translate('+ 0.10*width + ',30)');
 
 gStep.call(sliderStep);
 
-
+$(".slider-button").css("margin-left",0.06*width);
 $(".slider-button").click(function() {
     $(".slider-button").removeClass("slider-button-unpressed");
     $(".slider-button").addClass("slider-button-pressed");
+
     time_travel(currentYear);
 });
 
