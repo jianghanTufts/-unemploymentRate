@@ -61,7 +61,7 @@ var color1 = d3.scaleLinear()
 
 var projection = d3.geoAlbersUsa()
         .scale(width*1.12)
-        .translate([373/836*width,330/428*height]);
+        .translate([373,330]);
 
 var path = d3.geoPath()
         .projection(projection);
