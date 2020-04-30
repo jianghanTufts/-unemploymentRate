@@ -14,8 +14,8 @@ var state_map = d3.select("#main-map")
             .attr('width', width)
             .attr('height', height)
             .attr('transform', 'translate('+margin.left+','+ 0 +')')
-             .attr('cx', 100/836*width)
-             .attr('cy', 800/624*height)
+             .attr('cx', 373/836*width)
+             .attr('cy', 330/624*height)
 
 
 
