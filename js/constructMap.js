@@ -229,15 +229,7 @@ function clickOnState(d) {
                 scale = 1 / Math.max(dx / width, dy / height),
                 translate = [width - scale * x, height - scale * y];
 //                translate = [373,330]
-        console.log(bounds)
-        console.log(dx)
-        console.log(dy)
-        console.log(x)
-        console.log(y)
-        console.log('done')
-        console.log(width)
-        console.log( scale)
-        console.log(translate)
+
         state_map.transition()
                 .duration(450)
                 .style("stroke-width", 1.5 / scale + "px")
@@ -258,9 +250,9 @@ function clickOnState(d) {
                 .style("stroke", "#e3e3e3")
                 .style("stroke-width", ".3px")
         ;
-
+        var coutyColor;
         state_map.selectAll("path")
-                .on("mouseover", function (d) {                        
+                .on("mouseover", function (d) {                
                         var county_bounds = path.bounds(d),
                             county_dx = county_bounds[1][0] - county_bounds[0][0],
                             county_dy = county_bounds[1][1] - county_bounds[0][1],
@@ -290,6 +282,8 @@ function clickOnState(d) {
                         }
                         if (d.id > 1000)
                         {
+//                            console.log(d3.select(".county-"+d.id).style('fill'));   
+                            coutyColor = d3.select(".county-"+d.id).style('fill');  
                             if (barLock == false)
                             {
                                 chosenCountyId = d.id;
@@ -304,7 +298,7 @@ function clickOnState(d) {
                         state_map.select(".county_label2").remove();
                         if (d.id > 1000 && d.id != lastClickedCountyId)
                         {
-                                $(this).css("fill",$(this).data("fill"));
+                                $(this).css("fill",coutyColor);
                         }
                 })
                 
@@ -707,10 +701,11 @@ function getStateList(year) {
 }
 
 function mouseOverState(d){
+//    console.log("???");
     $(".state-"+d.id).css("fill","orange");
  }
  function mouseOutState(d){
-    
+    console.log("???");    
     $(".state-"+d.id).each(function(){
             $(this).css("fill",$(this).data("fill"));
       });
