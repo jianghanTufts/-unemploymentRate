@@ -9,8 +9,6 @@ var margin = {
 var width = pageWidth * 0.65 - margin.left,
     height = pageHeight * 0.6;
 
-console.log(width)
-console.log(height)
 var state_map = d3.select("#main-map")
             .append('g')
             .attr('width', width)
@@ -59,9 +57,13 @@ var color1 = d3.scaleLinear()
         .range(['#4a69bd', '#181818'])
         .interpolate(d3.interpolateHcl);
 
+
+
+console.log(width)
+console.log(height)
 var projection = d3.geoAlbersUsa()
         .scale(width*1.12)
-        .translate([373/836*width,330/428*height]);
+        .translate([373/836*width,330/624*height]);
 
 var path = d3.geoPath()
         .projection(projection);
