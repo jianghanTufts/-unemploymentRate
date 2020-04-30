@@ -82,6 +82,7 @@ var lastClickedCountyId = -1;
 var lastCountyObj;
 var clickedOnCounty = false;
 var countries = new Map();
+var currentStateId = 0;
 d3.queue()
         .defer(d3.json, "js/us.json")
         .await(function (error,us) {
@@ -127,9 +128,6 @@ function drawMap(year = "2010") {
                 .on("click", clickOnState)
                 .on("mouseover", mouseOverState)
                 .on("mouseout", mouseOutState);
-
-
-            console.log(state_map.selectAll(".states"));
 
         state_map.append("path")
                 .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
@@ -268,8 +266,10 @@ function clickOnState(d) {
                             county_x = (county_bounds[0][0] + county_bounds[1][0]) / 2,
                             county_y = (county_bounds[0][1] + county_bounds[1][1]) / 2;
                         var rect_width = 0;
-                        if (id_to_countyName.has(d.id))
+                        if ((Math.floor(d.id/1000) == chosenStateId  && ifCountyMode) && id_to_countyName.has(d.id))
                         {
+                            console.log("inner");
+                            console.log(id_to_countyName.get(d.id));
                                 rect_width = id_to_countyName.get(d.id).length;
                                 state_map.append("rect")
                                         .attr("x", county_x+4)
@@ -288,12 +288,9 @@ function clickOnState(d) {
                                         .style("fill", "rgb(203, 214, 0)")
                                         .attr("dy", ".35em")
                                         .style("font-size", "3.5px");
-                        }
-                        if (d.id > 1000 && ifCountyMode)
-                        {
-//                            console.log(d3.select(".county-"+d.id).style('fill'));
+                        
+
                             currentCountyColor = d3.select(".county-"+d.id).style('fill');
-//                            console.log("mouseover:"+currentCountyColor)
 
                                 chosenCountyId = d.id;
                                 drawSelectCounty(svgChosenCounty);
@@ -339,8 +336,6 @@ function countyYear(name, arr){
 
 function selectCounty(d) {
     clickedOnCounty = true;
-     console.log("select county");
-     console.log(d3.select(".county-"+d.id).style('fill'));
 
     if(!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
         alert("Up to ten counties can be compared at the same time!");
@@ -349,84 +344,25 @@ function selectCounty(d) {
     {
         if (countyCart.includes(d.id))
         {
-//            countyCartColor.get(d.id)
             for (var i = 0; i < countyCart.length; i++)
             {
                 if (countyCart[i] == d.id)
                 {
-                    console.log("delete")
                     delete countyCart[i];
                     break;
                 }
             }
-//            countyCart.delete(d.id);
             $(".county-"+d.id).css("fill",countyCartColor.get(d.id));
             countyCartColor.remove(d.id);
         }
         else 
         {
-//            var currentCoutyColor = d3.select(".county-"+d.id).style('fill');
-            console.log(currentCountyColor);
             countyCartColor.set(d.id,currentCountyColor)
             $(".county-"+d.id).css("fill","orange");
             countyCart.push(d.id);
         }
         
     }
-    console.log("color cart");
-    console.log(countyCartColor);
-    
-    // temp = new Array();
-    // line = new Array();
-
-    // let ids = "";
-    // let idn = "";
-    
-    // if(d.id < 10000){
-    //     ids = "0" + Math.floor(d.id/1000);
-    // } else {
-    //     ids = "" + Math.floor(d.id/1000);
-    // }
-    // // console.log(idn);
-    // for(var y = 2010; y < 2019; y++){
-    //     var sum = year_state_county.get(y.toString()).get(ids);
-    //     for(var i = 0, len = sum.length; i < len; i++){
-    //         if(sum[i].county_id === d.id){
-    //             temp.push(sum[i].county_rate);
-    //             line.push([y, sum[i].county_rate]);
-    //             break;
-    //         }
-    //     }
-    // }
-    // nameset.push(id_to_countyName["$" + d.id]);
-    // countyCart.push(new countyYear(id_to_countyName["$" + d.id], temp));
-    // dataset.push(line);
-
-//    if (barLock == false)
-//    {
-//        lastClickedCountyId = d.id;
-//        barLock = true;
-//        lastCountyObj = $(this);
-//        $(".county-"+d.id).css("fill","orange");
-//        
-//    }
-//    else
-//    {
-//        if (d.id == lastClickedCountyId)
-//        {
-//            lastClickedCountyId = -1;
-//            barLock = false;
-//            console.log($(this));
-//            $(this).css("fill",$(this).data("fill"));
-//        }
-//        else 
-//        {
-//            lastCountyObj.css("fill",lastCountyObj.data("fill"));
-//            $(".county-"+d.id).css("fill","orange");
-//            lastCountyObj = $(this);
-//            lastClickedCountyId = d.id;
-//        }
-//    }
     
     chosenCountyId = d.id;
     drawSelectCounty(svgChosenCounty);
