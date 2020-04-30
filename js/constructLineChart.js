@@ -78,7 +78,8 @@ function drawLineChart(){
   let yxAxis = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
 
 
-  if(countyCart.length < 1){
+  if(countyCartColor.keys().length < 1){
+  	line_chart.selectAll("*").remove();
     drawWelcomeText();
     return;
   }
