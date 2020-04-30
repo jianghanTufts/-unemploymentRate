@@ -20,10 +20,14 @@ html,body{
     stroke-linejoin: round;
 }
 .map-container{
+    position: relative;
+    bottom: 20%;
+    top: auto;
+    left: 0;
+    right: 0;
     display: inline-block;
-    margin-left: 5%;
-    width: 80%;
     height: 80%;
+    width: 100%;
 }
 .map-body{
     width: 100%;
@@ -166,7 +170,7 @@ html,body{
     top: 0;
     bottom: 0;
     left: 0;
-    right: auto;
+    right: 35%;
     padding-top: 56px;
     min-width: 500px;
 }
@@ -185,4 +189,27 @@ header{
     position: fixed;
     width: 100%;
     z-index: 100;
+}
+
+.slider-container{
+    display:inline-block;
+}
+
+.slider-button {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    margin-left:100px;
+    border: none;
+}
+
+.slider-button-unpressed {
+    background: url(../img/icons/play-button-unpressed.png) no-repeat;
+    background-size: 30px 30px;
+}
+
+.slider-button-pressed {
+    background: url(../img/icons/play-button-pressed.png);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
 }
