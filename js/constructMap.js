@@ -7,7 +7,7 @@ var margin = {
     right:10
 };
 var width = pageWidth * 0.65 - margin.left,
-    height = pageHeight * 0.6;
+    height = pageHeight * 0.8;
 
 var state_map = d3.select("#main-map")
             .append('g')
