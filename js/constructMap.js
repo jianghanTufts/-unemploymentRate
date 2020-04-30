@@ -336,31 +336,32 @@ function selectCounty(d) {
         alert("Up to ten counties can be compared at the same time!");
     }
     
-    temp = new Array();
-    line = new Array();
+    // temp = new Array();
+    // line = new Array();
 
-    let ids = "";
-    let idn = "";
+    // let ids = "";
+    // let idn = "";
     
-    if(d.id < 10000){
-        ids = "0" + Math.floor(d.id/1000);
-    } else {
-        ids = "" + Math.floor(d.id/1000);
-    }
-    // console.log(idn);
-    for(var y = 2010; y < 2019; y++){
-        var sum = year_state_county.get(y.toString()).get(ids);
-        for(var i = 0, len = sum.length; i < len; i++){
-            if(sum[i].county_id === d.id){
-                temp.push(sum[i].county_rate);
-                line.push([y, sum[i].county_rate]);
-                break;
-            }
-        }
-    }
-    nameset.push(id_to_countyName["$" + d.id]);
-    countyCart.push(new countyYear(id_to_countyName["$" + d.id], temp));
-    dataset.push(line);
+    // if(d.id < 10000){
+    //     ids = "0" + Math.floor(d.id/1000);
+    // } else {
+    //     ids = "" + Math.floor(d.id/1000);
+    // }
+    // // console.log(idn);
+    // for(var y = 2010; y < 2019; y++){
+    //     var sum = year_state_county.get(y.toString()).get(ids);
+    //     for(var i = 0, len = sum.length; i < len; i++){
+    //         if(sum[i].county_id === d.id){
+    //             temp.push(sum[i].county_rate);
+    //             line.push([y, sum[i].county_rate]);
+    //             break;
+    //         }
+    //     }
+    // }
+    // nameset.push(id_to_countyName["$" + d.id]);
+    // countyCart.push(new countyYear(id_to_countyName["$" + d.id], temp));
+    countyCart.push(d.id);
+    // dataset.push(line);
 
     if (barLock == false)
     {
@@ -710,5 +711,6 @@ function mouseOutState(d){
  }
 
 $('#exampleModal').on('show.bs.modal', function (e) {
+    console.log("call draw line chart");
     drawLineChart();
 })

@@ -15,8 +15,8 @@ const yxAxis = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 // var dataset1 = [[1, 224], [2, 528], [3, 756], [4, 632], [5, 582], [6, 704], [7, 766], [8, 804], [9, 884], [10, 960], [11, 1095], [12, 1250]];
 // var dataset2 = [[1, 200], [2, 528], [3, 756], [4, 632], [5, 582], [6, 704], [7, 766], [8, 804], [9, 884], [10, 960], [11, 1095], [12, 1250]];
 
-dataset = new Array();
-nameset = new Array();
+// dataset = new Array();
+// nameset = new Array();
 
 // // class data = {
 // //   const columns = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
@@ -47,6 +47,9 @@ nameset = new Array();
 
 // remind words
 
+let sum;
+let ids = "";
+
 var welcomeText = line_chart
   .append('g')
   .append('text')
@@ -61,14 +64,56 @@ welcomeText
   .attr("font-size", 16)
   .attr("text-anchor", "middle")
 
-
-
-
 let idc = 0;
 let idp = 0;
 
 function drawLineChart(){
+
+
+  if(countyCart.length == 0){
+    return;
+  }
+
+  // pre-process data
+
+  var dataset = new Array();
+  var nameset = new Array();
+
+  for (var i = countyCart.length - 1; i >= 0; i--) {
+
+    var temp = new Array();
+    var line = new Array();
+
+    // let ids = "";
+    // let idn = "";
+
+    if(countyCart[i] < 10000){
+        ids = "0" + Math.floor(countyCart[i]/1000);
+    } else {
+        ids = "" + Math.floor(countyCart[i]/1000);
+    }
+
+
+    // console.log(ids);
+    // console.log(idn);
+
+    for(var y = 2010; y < 2019; y++){
+        sum = year_state_county.get(y.toString()).get(ids);
+        for(var i = 0, len = sum.length; i < len; i++){
+            if(sum[i].county_id === countyCart[i]){
+                temp.push(sum[i].county_rate);
+                line.push([y, sum[i].county_rate]);
+                break;
+            }
+        }
+    }
+    nameset.push(id_to_countyName["$" + countyCart[i]]);
+    dataset.push(line);
+
+  }
   
+
+
   line_chart.selectAll("*").remove();
 
   var min = d3.min(dataset, function(d) {
