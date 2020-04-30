@@ -10,10 +10,11 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <a class="navbar-brand">US Unemployment Rate Map</a>
-        <button type="button" class="btn btn-primary nav-right" data-toggle="modal" data-target="#exampleModal">
-
-        </button>
-
+        <div class="chart-button-box-container">
+            <button type="button" class="btn btn-primary nav-right" data-toggle="modal" data-target="#exampleModal">
+                <div class="nav-counter" id="num_states">4</div>
+            </button>
+        </div>
     </nav>
 </header>
 
@@ -62,7 +63,8 @@
 </body>
 </html>
 <!-- <script src="js/d3.js"></script> -->
-<script src="js/d3.v4.min.js"></script>
+<!--<script src="js/d3.v4.min.js"></script>-->
+<script src="https://d3js.org/d3.v4.js"></script>
 <script src="js/topojson.v1.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

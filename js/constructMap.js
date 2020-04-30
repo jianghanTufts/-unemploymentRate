@@ -345,7 +345,6 @@ function selectCounty(d) {
     nameset.push(id_to_countyName["$" + d.id]);
     countyCart.push(new countyYear(id_to_countyName["$" + d.id], temp));
     dataset.push(line);
-    drawLineChart();
 
     if (barLock == false)
     {
@@ -687,9 +686,13 @@ function getStateList(year) {
 function mouseOverState(d){
     $(".state-"+d.id).css("fill","orange");
  }
- function mouseOutState(d){
+function mouseOutState(d){
     
     $(".state-"+d.id).each(function(){
             $(this).css("fill",$(this).data("fill"));
       });
  }
+
+$('#exampleModal').on('show.bs.modal', function (e) {
+    drawLineChart();
+})

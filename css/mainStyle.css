@@ -76,9 +76,6 @@ html,body{
     font-size: 11px;
 }
 .nav-right{
-    margin-right: 10px;
-    margin-left: auto;
-    cursor: pointer;
     background-image: url("data:image/svg+xml, <svg class='bi bi-clipboard-data' width='1em' height='1em' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>\
     <path fill-rule='evenodd' d='M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z' clip-rule='evenodd'/>\
     <path fill-rule='evenodd' d='M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z'\
@@ -86,13 +83,58 @@ html,body{
     <path d='M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0V9z'/>\
     </svg>");
     background-repeat: no-repeat;
-    background-size: 1rem 1rem;
+    background-size: 1.5rem 1.5rem;
     display: inline-block;
     content: "";
-    padding: 0;
     height: 1.5em;
     background-position: center;
 }
+.chart-button-box-container{
+    margin-right: 10px;
+    margin-left: auto;
+    cursor: pointer;
+    height: 2em;
+    padding: 0;
+}
+.nav-link {
+    position: relative;
+    padding: 0 14px;
+    line-height: 34px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #555;
+    text-decoration: none;
+}
+.nav-link:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.nav-counter {
+    position: absolute;
+    top: 16px;
+    right: 10px;
+    min-width: 8px;
+    height: 20px;
+    line-height: 20px;
+    margin-top: -11px;
+    padding: 0 6px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+    background: #e23442;
+    border: 1px solid #911f28;
+    border-radius: 11px;
+    background-image: -webkit-linear-gradient(top, #e8616c, #dd202f);
+    background-image: -moz-linear-gradient(top, #e8616c, #dd202f);
+    background-image: -o-linear-gradient(top, #e8616c, #dd202f);
+    background-image: linear-gradient(to bottom, #e8616c, #dd202f);
+    -webkit-box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+}
+
+
 .tooltip {
      position: absolute;
      text-align: center;
