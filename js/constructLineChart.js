@@ -10,8 +10,6 @@ var height = 400;
 // 预留给轴线的距离
 var padding = { top: 50, right: 50, bottom: 50, left: 50 };
 
-const yxAxis = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
-
 // var dataset1 = [[1, 224], [2, 528], [3, 756], [4, 632], [5, 582], [6, 704], [7, 766], [8, 804], [9, 884], [10, 960], [11, 1095], [12, 1250]];
 // var dataset2 = [[1, 200], [2, 528], [3, 756], [4, 632], [5, 582], [6, 704], [7, 766], [8, 804], [9, 884], [10, 960], [11, 1095], [12, 1250]];
 
@@ -34,7 +32,7 @@ const yxAxis = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 
 //   this.y = "% Unemployment";
 //   this.series = countyCart;
-//   const columns = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
+  // const columns = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 //   // for (var i = columns.length - 1; i >= 0; i--) {
 //   //   columns[i]
 //   // }
@@ -52,19 +50,22 @@ const yxAxis = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 // var dataset = new Array();
 // var nameset = new Array();
 
-var welcomeText = line_chart
-  .append('g')
-  .append('text')
-  .attr("text-anchor", "left")
-  .attr("alignment-baseline", "middle");
+function drawWelcomeText(){
 
-welcomeText
-  .html("No county selected, please select the county first!")
-  .attr("x", width/2)
-  .attr("y", height/5*2)
-  .attr("font-family", "sans-serif")
-  .attr("font-size", 16*1.8)
-  .attr("text-anchor", "middle")
+  let welcomeText = line_chart
+    .append('g')
+    .append('text')
+    .attr("text-anchor", "left")
+    .attr("alignment-baseline", "middle");
+
+  welcomeText
+    .html("No county selected, please select the county first!")
+    .attr("x", width/2)
+    .attr("y", height/5*2)
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 16)
+    .attr("text-anchor", "middle")
+}
 
 // let idc = 0;
 // let idp = 0;
@@ -74,11 +75,17 @@ welcomeText
 function drawLineChart(){
 
 
+  let yxAxis = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
+
+
   if(countyCart.length < 1){
+    drawWelcomeText();
     return;
   }
 
-  var offset = 1.5;
+  let offset = 5;
+  let fontSize = 8;
+  let shrinkRate = 1;
 
   // pre-process data
 
@@ -313,33 +320,43 @@ function drawLineChart(){
         if(dataset.length >= 1){
           focus.style("opacity", 1)
           focusText1.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 2){
           focusText2.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 3){
           focusText3.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 4){
           focusText4.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 5){
           focusText5.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 6){
           focusText6.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 7){
           focusText7.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 8){
           focusText8.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 9){
           focusText9.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
         if(dataset.length >= 10){
           focusText10.style("opacity",1)
+          shrinkRate = shrinkRate * shrinkRate;
         }
       })
       .on('mousemove', function(){
@@ -443,7 +460,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50-4*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -468,7 +485,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50-3*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -493,7 +510,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50-2*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -518,7 +535,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50-1*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -543,7 +560,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+0*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -568,7 +585,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+1*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -593,7 +610,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+2*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -618,7 +635,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+3*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -643,7 +660,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+4*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
@@ -668,7 +685,7 @@ function drawLineChart(){
                 .attr("x", xScale(selectedData[0])+50)
                 .attr("y", yScale(selectedData[1])+50+5*offset)
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 6)
+                .attr("font-size", Math.floor(fontSize * shrinkRate))
                 .attr("text-anchor", "middle")
           }
 
