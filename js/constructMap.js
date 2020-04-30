@@ -19,7 +19,6 @@ var state_map = d3.select("#main-map")
             .attr('cx', 100/836*width)
             .attr('cy', 800/624*height)
 
-console.log(d3.select("#main-map"))
 
 
 //chart's value
@@ -53,9 +52,6 @@ var countyCart = new Array();
 var countyCartColor = d3.map();
 var active = d3.select(null);
 var currentCountyColor;
-//var state_map = svg.append("g")
-//                    .attr('width', width+300)
-//                    .attr('height', height)
 
 
 var color1 = d3.scaleLinear()
@@ -65,7 +61,7 @@ var color1 = d3.scaleLinear()
 
 var projection = d3.geoAlbersUsa()
         .scale(width*1.12)
-        .translate([373,330]);
+        .translate([373/836*width,330/428*height]);
 
 var path = d3.geoPath()
         .projection(projection);
@@ -324,14 +320,16 @@ function clickOnState(d) {
                         }
                         drawCoutyInCart();
                 })
-                
+                console.log("height")
+                console.log(pageWidth)
+                console.log(pageHeight)
         var cancelButton = d3.select("#main-map")
             .append("circle")
             .attr("class", "redButton")
             .style("fill", "red")
             .style("opacity", 0.7)
             .attr("cx", 100)
-            .attr("cy", 400)
+            .attr("cy", 540)
             .attr("r", 30)
             .on("click", resetOnCounty);
 }
