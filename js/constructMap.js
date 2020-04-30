@@ -212,7 +212,6 @@ function buildPercentageChart() {
 
 function clickOnState(d) {
         ifCountyMode = true;
-        console.log("click on state");
         chosenStateId = d.id;
         drawRankingChart(currentYear,"county",svgRanking)
         
@@ -323,6 +322,7 @@ function clickOnState(d) {
                             } )
                                 
                         }
+                        drawCoutyInCart();
                 })
                 
         var cancelButton = d3.select("#main-map")
@@ -716,7 +716,6 @@ function getStateList(year) {
 }
 
 function mouseOverState(d){
-    console.log("mouseoverstate")
     $(".state-"+d.id).css("fill","orange");
  }
 function mouseOutState(d) {
