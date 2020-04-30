@@ -1,8 +1,17 @@
 var pageWidth = $("body").width();
 var pageHeight = $(".left-page").height()
-var svg = d3.select("#main-map"),
-        width = pageWidth * 0.65,
-        height = pageHeight * 0.6;
+var width = pageWidth * 0.65,
+    height = pageHeight * 0.8;
+    
+    
+var state_map = d3.select("#main-map")
+            .append('g')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('cx', 300)
+            .attr('cy', 800)
+
+console.log(d3.select("#main-map"))
 
 var margin = {
         top: 10,
@@ -38,7 +47,9 @@ let svgChosenCounty = d3.select("#county_select")
 
 var countyCart = new Array();
 var active = d3.select(null);
-var state_map = svg.append("g")
+//var state_map = svg.append("g")
+//                    .attr('width', width+300)
+//                    .attr('height', height)
 
 
 var color1 = d3.scaleLinear()
@@ -47,8 +58,8 @@ var color1 = d3.scaleLinear()
         .interpolate(d3.interpolateHcl);
 
 var projection = d3.geoAlbersUsa()
-        .scale(width)
-        .translate([width * 0.5, height * 0.22 ]);
+        .scale(width*1.12)
+        .translate([373,330]);
 
 var path = d3.geoPath()
         .projection(projection);
@@ -110,7 +121,8 @@ function drawMap(year = "2010") {
                 .on("mouseover", mouseOverState)
                 .on("mouseout", mouseOutState);
 
-
+                
+            console.log(state_map.selectAll(".states"));
 
         state_map.append("path")
                 .datum(topojson.mesh(globalUS, globalUS.objects.states, function(a, b) { return a !== b; }))
@@ -143,9 +155,9 @@ function buildPercetageChart() {
         var x_axis = d3.scaleLinear()
                 .domain([1, 12])
                 .rangeRound([600, 960]);
-        var bar = svg.append('g')
+        var bar = d3.select('svg').append('g')
                 .attr('class', 'key')
-                .attr('transform', 'translate(0,40)');
+                .attr('transform', 'translate(-130,60)');
 
         var rgb_arr = [0,3,6,9,12,15,18,21,24];
         var bar_rgb_color = [];
@@ -178,6 +190,7 @@ function buildPercetageChart() {
                 .attr('x', x_axis.range()[0])
                 .attr('y', -6)
                 .attr('fill', '#000')
+//                .attr('transform', 'translate(',100,')')
                 .attr('text-anchor', 'start')
                 .attr('font-weight', 'bold')
                 .text('Unempoyment rating');
@@ -193,7 +206,7 @@ function buildPercetageChart() {
 }
 
 function clickOnState(d) {
-//        console.log("click on state");
+        console.log("click on state");
         chosenStateId = d.id;
         drawRankingChart(currentYear,"county",svgRanking)
         
@@ -213,8 +226,18 @@ function clickOnState(d) {
                 dy = bounds[1][1] - bounds[0][1],
                 x = (bounds[0][0] + bounds[1][0]) / 2,
                 y = (bounds[0][1] + bounds[1][1]) / 2,
-                scale = 0.5 / Math.max(dx / width, dy / height),
-                translate = [width * 0.5 - scale * x, height * 0.22 - scale * y];
+                scale = 1 / Math.max(dx / width, dy / height),
+                translate = [width - scale * x, height - scale * y];
+//                translate = [373,330]
+        console.log(bounds)
+        console.log(dx)
+        console.log(dy)
+        console.log(x)
+        console.log(y)
+        console.log('done')
+        console.log(width)
+        console.log( scale)
+        console.log(translate)
         state_map.transition()
                 .duration(450)
                 .style("stroke-width", 1.5 / scale + "px")
@@ -285,8 +308,7 @@ function clickOnState(d) {
                         }
                 })
                 
-        var cancelButton = d3
-            .select("svg")
+        var cancelButton = d3.select("#main-map")
             .append("circle")
             .attr("class", "redButton")
             .style("fill", "red")
@@ -313,8 +335,8 @@ function countyYear(name, arr){
 }
 
 function selectCounty(d) {
-    // console.log("select");
-    // console.log(barLock);
+     console.log("select county");
+     console.log(barLock);
 
     if(countyCart.length == 10){
         alert("Up to ten counties can be compared at the same time!");
@@ -396,7 +418,7 @@ function resetOnCounty(d) {
 //        .delay(100)
                 .duration(450)
                 .remove();
-        svg.select(".redButton")
+        d3.select(".redButton")
             .transition()
             .delay(300)
             .duration(300)
@@ -437,7 +459,7 @@ var gStep = d3
         .attr('width', width)
         .attr('height', 100)
         .append('g')
-        .attr('transform', 'translate('+ 0.3*width + ',30)');
+        .attr('transform', 'translate('+ 0.15*width + ',30)');
 
 gStep.call(sliderStep);
 
