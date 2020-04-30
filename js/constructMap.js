@@ -391,7 +391,7 @@ function selectCounty(d) {
     
     chosenCountyId = d.id;
     drawSelectCounty(svgChosenCounty);
-
+    updateBubble();
 }
 
 function resetOnCounty(d) {
@@ -423,6 +423,7 @@ function resetOnCounty(d) {
         chosenStateId = 0;
         drawRankingChart(currentYear, "state",svgRanking);
         drawSelectCounty(svgChosenCounty);
+        updateBubble();
 }
 
 
@@ -703,12 +704,20 @@ function getStateList(year) {
 function mouseOverState(d){
     $(".state-"+d.id).css("fill","orange");
  }
-function mouseOutState(d){
-
-    $(".state-"+d.id).each(function(){
-            $(this).css("fill",$(this).data("fill"));
-      });
- }
+function mouseOutState(d) {
+    $(".state-" + d.id).each(function () {
+        $(this).css("fill", $(this).data("fill"));
+    });
+}
+function updateBubble(){
+    var l = countyCart.length;
+    $("#num_states").html(l);
+    if(l<1){
+        $("#num_states").css("opacity",0);
+    }else{
+        $("#num_states").css("opacity",1);
+    }
+}
 
 $('#exampleModal').on('show.bs.modal', function (e) {
     console.log("call draw line chart");
