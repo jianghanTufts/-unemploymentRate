@@ -20,10 +20,10 @@ var state_map = d3.select("#main-map")
 
 
 //chart's value
-var chartWidth = pageWidth * 0.35 - margin.right;//800
+var chartWidth = pageWidth * 0.35-margin.right ;//800
 var chartHeight = 500 ;//500
 var barHeight = (15/500) *chartHeight ;
-var yAxisOffset = 150;
+var yAxisOffset = 200;
 var xAxisOffset = 30;
 var offsetBetweenBar = 5;
 var offsetBetweenBarXAxis = 10;
