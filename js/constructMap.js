@@ -294,7 +294,6 @@ function clickOnState(d) {
                         }
                         else if (!ifCountyMode)
                         {
-//                            $(".state-"+d.id).css("opacity",0.5);
                             $(".state-"+d.id).css("fill","orange");
                              
 
@@ -328,21 +327,6 @@ function clickOnState(d) {
             .attr("cy", 540)
             .attr("r", 30)
             .on("click", resetOnCounty);
-}
-
-// function constructCartArray(id){
-//     // countyCart.add(id);
-//     line = new Array();
-//     for(y = 2010; y < 2019; y++){
-//         line.push(year_state_rate.get(y).get(id));
-//     }   
-//     countyCart.add(new countyYear(id_to_countyName[id], line));
-//     console.alert(1);
-// }
-
-function countyYear(name, arr){
-  this.name = name;
-  this.values = arr;
 }
 
 function selectCounty(d) {
@@ -478,10 +462,6 @@ function getXScale(objectList, chart_catogary, zoomRate = 1){
                 maxRate = objectList[0].county_rate;
         else
                 maxRate = objectList[0].state_rate;
-
-        // var scale = d3.scaleLinear()
-        //     .domain([0, zoomRate * maxRate])
-        //     .range([0, zoomRate * 0.3*chartWidth]);
         var scale = d3.scaleLinear()
                 .domain([0, 25])
                 .range([0, zoomRate * 0.5*chartWidth]);
