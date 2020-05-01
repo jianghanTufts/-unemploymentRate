@@ -109,6 +109,7 @@ function drawLineChart() {
         .range([height - padding.top - padding.bottom, 0]);
 
     var xAxis = d3.axisBottom()
+        .tickFormat(d3.format("d"))
         .scale(xScale);
 
     var yAxis = d3.axisLeft()
