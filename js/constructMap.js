@@ -46,7 +46,6 @@ let svgChosenCounty = d3.select("#county_select")
         .attr('width', chartWidth)
         .attr('height', chartHeight/5);
 
-var countyCart = new Array();
 var countyCartColor = d3.map();
 var active = d3.select(null);
 var currentCountyColor;
@@ -304,7 +303,9 @@ function clickOnState(d) {
                         state_map.select(".county_label2").remove();
                         if (d.id > 1000 && !clickedOnCounty)
                         {
-                                $(this).css("fill",currentCountyColor);
+                                $(".county-"+d.id).css("fill", color1(rate_by_year.get(currentYear).get(d.id)));
+
+//                                $(this).css("fill",currentCountyColor);
                         }
                         if (!ifCountyMode)
                         {
@@ -318,6 +319,7 @@ function clickOnState(d) {
                         }
                         drawCoutyInCart();
                 })
+
         var cancelButton = d3.select("#main-map")
             .append("circle")
             .attr("class", "redButton")
@@ -332,7 +334,8 @@ function clickOnState(d) {
 function selectCounty(d) {
     clickedOnCounty = true;
 
-    if(!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
+
+    if (!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
         alert("Up to ten counties can be compared at the same time!");
         clickedOnCounty = false;
         return
@@ -341,22 +344,15 @@ function selectCounty(d) {
     {
         if (countyCartColor.has(d.id))
         {
-            for (var i = 0; i < countyCart.length; i++)
-            {
-                if (countyCart[i] == d.id)
-                {
-                    delete countyCart[i];
-                    break;
-                }
-            }
             $(".county-"+d.id).css("fill",countyCartColor.get(d.id));
             countyCartColor.remove(d.id);
+            clickedOnCounty = false;
+
         }
         else 
         {
             countyCartColor.set(d.id,currentCountyColor)
             $(".county-"+d.id).css("fill","orange");
-            countyCart.push(d.id);
         }
         
     }
