@@ -19,7 +19,7 @@ var padding = { top: 50, right: 50, bottom: 50, left: 50 };
 
 var line_color = d3.scaleOrdinal(d3.schemeCategory10);
 var curPos = -1;
-
+var line_freeze = false;
 function drawWelcomeText(){
 
     let welcomeText = line_chart
@@ -179,6 +179,7 @@ function drawLineChart() {
             .enter()
             .append('circle')
             .attr('r', 1.5)
+            .attr("data-setpos",i)
             .attr("stroke", function(){
                 return line_color(i);
             })
@@ -200,14 +201,24 @@ function drawLineChart() {
             .style("fill", function(){
                 return line_color(i);
             })
-            .on('mouseenter', function(){
-
+            .on('mouseover', function(){
+                var cur_i = $(this).data("setpos");
+                d3.select("#line-chart").selectAll('path')
+                    .attr('opacity', function(){
+                        let rem_i = $(this).data("setpos");
+                        return cur_i==rem_i?1:0.2;
+                    });
+                d3.select("#line-chart").selectAll('circle').attr('opacity', function(){
+                    let rem_i = $(this).data("setpos");
+                    return cur_i==rem_i?1:0.2;
+                });
             })
             .on('mouseout', function(){
-
+                d3.select("#line-chart").selectAll('path').attr('opacity', 1);
+                d3.select("#line-chart").selectAll('circle').attr('opacity', 1);
             })
             .on("click",function(){
-                var d_id = idArray[$(this).data("setpos")]
+                var d_id = idArray[$(this).data("setpos")];
                 $(".county-"+d_id).css("fill",countyCartColor.get(d_id));
                 countyCartColor.remove(d_id);
                 drawLineChart();
@@ -232,7 +243,7 @@ function drawLineChart() {
         .attr('width', width)
         .attr('height', height)
         .on('mouseover', function(){
-
+            if(line_freeze) return;
             d3.select("#line-chart").selectAll('path').attr('opacity', 0.5);
             d3.select("#line-chart").selectAll('circle').attr('opacity', 0.5);
 
@@ -241,6 +252,7 @@ function drawLineChart() {
             }
         })
         .on('mousemove', function(){
+            if(line_freeze) return;
             var x0 = xScale.invert(d3.mouse(this)[0]);
             var i = parseInt(x0 - 1);
             // var curPos = i;
@@ -265,8 +277,6 @@ function drawLineChart() {
                 }
                 posset.push(count);
             }
-            console.log(posset);
-
             if(i<2010 || i>2018){
                 return;
             }
@@ -290,13 +300,60 @@ function drawLineChart() {
                 });
         })
         .on('mouseout', function(){
-
+            if(line_freeze) return;
             d3.select("#line-chart").selectAll('path').attr('opacity', 1);
             d3.select("#line-chart").selectAll('circle').attr('opacity', 1);
 
             if(dataset.length >= 1){
                 focus.style("opacity", 0);
             }
+        })
+        .on('click',function(){
+            line_freeze = !line_freeze;
+            var x0 = xScale.invert(d3.mouse(this)[0]);
+            var i = parseInt(x0 - 1);
+            // var curPos = i;
+            if(i<2010 || i>2018){
+                return;
+            }
+            var selectedPos = dataset[0][i-2010];
+            var selectedData = new Array();
+            for(var j = 0; j < dataset.length; j++){
+                selectedData.push(dataset[j][i-2010][1]);
+            }
+            var posset = new Array();
+            for(let x = 0; x < dataset.length; x++){
+                var count = 0;
+                selectedData.forEach(function(element){
+                    if(element>=selectedData[x]){
+                        count++;
+                    }
+                });
+                while(posset.indexOf(count)>-1){
+                    count--;
+                }
+                posset.push(count);
+            }
+            if(i<2010 || i>2018){
+                return;
+            }
+            focus.attr("x1",xScale(selectedPos[0])+50)
+                .attr("x2",xScale(selectedPos[0])+50);
+            legend_chart.selectAll('text')
+                .html(function(){
+                    var pos = $(this).data("setpos");
+                    return nameset[pos] + "&nbsp;&nbsp;" + dataset[pos][i-2010][1] + "%";
+                })
+                .transition()
+                .attr('transform', function(){
+                    var pos = $(this).data("setpos");
+                    return 'translate(' + 30 + ',' + (40 * (posset[pos] ) + 8)  + ')';
+                });
+            legend_chart.selectAll('rect')
+                .transition()
+                .attr('transform', function(){
+                    var pos = $(this).data("setpos");
+                    return 'translate(' + 10 + ',' + 40 * (posset[pos] )  + ')';
+                });
         });
-
 }
