@@ -359,7 +359,7 @@ function selectCounty(d) {
     }
     else 
     {
-        if (countyCart.includes(d.id))
+        if (countyCartColor.has(d.id))
         {
             for (var i = 0; i < countyCart.length; i++)
             {
