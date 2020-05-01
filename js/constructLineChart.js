@@ -49,6 +49,11 @@ $(".legend-trash").on("click",function(){
     drawWelcomeText();
     updateBubble();
 });
+$(".chart-lock").on("click",function(){
+    line_freeze = !line_freeze;
+    $(".chart-lock").css("opacity",line_freeze?1:0);
+    drawLineChart();
+});
 
 function drawLineChart() {
 
@@ -63,6 +68,7 @@ function drawLineChart() {
         drawWelcomeText();
         return;
     }
+    $(".chart-lock").css("opacity",line_freeze?1:0);
 
     $(".legend-trash").css("opacity",1);
     // pre-process data
@@ -310,9 +316,9 @@ function drawLineChart() {
         })
         .on('click',function(){
             line_freeze = !line_freeze;
+            $(".chart-lock").css("opacity",line_freeze?1:0);
             var x0 = xScale.invert(d3.mouse(this)[0]);
             var i = parseInt(x0 - 1);
-            // var curPos = i;
             if(i<2010 || i>2018){
                 return;
             }
