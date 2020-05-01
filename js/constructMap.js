@@ -293,6 +293,7 @@ function clickOnState(d) {
                         }
                         else if (!ifCountyMode)
                         {
+                            console.log("here??")
 //                            $(".state-"+d.id).css("opacity",0.5);
                             $(".state-"+d.id).css("fill","orange");
                              
@@ -304,7 +305,9 @@ function clickOnState(d) {
                         state_map.select(".county_label2").remove();
                         if (d.id > 1000 && !clickedOnCounty)
                         {
-                                $(this).css("fill",currentCountyColor);
+                                $(".county-"+d.id).css("fill", color1(rate_by_year.get(currentYear).get(d.id)));
+                                
+//                                $(this).css("fill",currentCountyColor);
                         }
                         if (!ifCountyMode)
                         {
@@ -318,9 +321,7 @@ function clickOnState(d) {
                         }
                         drawCoutyInCart();
                 })
-                console.log("height")
-                console.log(pageWidth)
-                console.log(pageHeight)
+
         var cancelButton = d3.select("#main-map")
             .append("circle")
             .attr("class", "redButton")
@@ -349,19 +350,22 @@ function countyYear(name, arr){
 
 function selectCounty(d) {
     clickedOnCounty = true;
+    
 
-    if(!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
+    if (!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
         alert("Up to ten counties can be compared at the same time!");
         clickedOnCounty = false;
         return
     }
     else 
     {
+        console.log(countyCartColor);
         if (countyCartColor.has(d.id))
         {
             $(".county-"+d.id).css("fill",countyCartColor.get(d.id));
             countyCartColor.remove(d.id);
             clickedOnCounty = false;
+            
         }
         else 
         {
