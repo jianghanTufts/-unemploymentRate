@@ -37,6 +37,19 @@ function drawWelcomeText(){
         .attr("text-anchor", "middle")
 }
 
+$(".legend-trash").on("click",function(){
+    var idArray = countyCartColor.keys();
+    for(var d_id in idArray)  {
+        $(".county-"+idArray[d_id]).css("fill",countyCartColor.get(idArray[d_id]));
+        countyCartColor.remove(idArray[d_id]);
+    };
+    $(".legend-trash").css("opacity",0);
+    line_chart.selectAll("*").remove();
+    legend_chart.selectAll("*").remove();
+    drawWelcomeText();
+    updateBubble();
+});
+
 function drawLineChart() {
 
 
@@ -45,15 +58,18 @@ function drawLineChart() {
 
     if (countyCartColor.keys().length < 1) {
         line_chart.selectAll("*").remove();
+        legend_chart.selectAll("*").remove();
+        $(".legend-trash").css("opacity",0);
         drawWelcomeText();
         return;
     }
 
+    $(".legend-trash").css("opacity",1);
     // pre-process data
 
     let dataset = new Array();
     let nameset = new Array();
-    var posset = new Array();
+    var idset = new Array();
 
     let idArray = countyCartColor.keys();
 
@@ -171,6 +187,7 @@ function drawLineChart() {
                 return 'translate(' + (xScale(d[0]) + padding.left) + ',' + (yScale(d[1]) + padding.top) + ')'
             });
 
+
         legend_chart.append('rect')
             .style("fill", "none")
             .style("pointer-events", "all")
@@ -182,6 +199,19 @@ function drawLineChart() {
             .attr('transform', 'translate(' + 10 + ',' + 40 * (i+3) + ')')
             .style("fill", function(){
                 return line_color(i);
+            })
+            .on('mouseenter', function(){
+
+            })
+            .on('mouseout', function(){
+
+            })
+            .on("click",function(){
+                var d_id = idArray[$(this).data("setpos")]
+                $(".county-"+d_id).css("fill",countyCartColor.get(d_id));
+                countyCartColor.remove(d_id);
+                drawLineChart();
+                updateBubble();
             });
         legend_chart.append('text')
             .attr("text-anchor", "left")

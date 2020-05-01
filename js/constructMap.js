@@ -58,9 +58,6 @@ var color1 = d3.scaleLinear()
         .interpolate(d3.interpolateHcl);
 
 
-
-console.log(width)
-console.log(height)
 var projection = d3.geoAlbersUsa()
         .scale(width*1.12)
         .translate([373/836*width,330/624*height]);
