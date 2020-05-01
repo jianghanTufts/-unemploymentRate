@@ -75,12 +75,11 @@ function drawLineChart() {
 
     let dataset = new Array();
     let nameset = new Array();
-    var idset = new Array();
 
     let idArray = countyCartColor.keys();
 
 
-    for (var k = idArray.length - 1; k >= 0; k--) {
+    for (var k = 0; k < idArray.length; k++) {
 
         let temp = new Array();
         let line = new Array();
@@ -97,7 +96,6 @@ function drawLineChart() {
 
         for (var y = 2010; y < 2019; y++) {
             sum = year_state_county.get(y.toString()).get(ids);
-            // console.log("sum: " + sum);
             for (var q = 0, len = sum.length; q < len; q++) {
                 if (sum[q].county_id === currId) {
                     temp.push(sum[q].county_rate);
@@ -225,6 +223,7 @@ function drawLineChart() {
             })
             .on("click",function(){
                 var d_id = idArray[$(this).data("setpos")];
+
                 $(".county-"+d_id).css("fill",countyCartColor.get(d_id));
                 countyCartColor.remove(d_id);
                 drawLineChart();

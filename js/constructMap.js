@@ -319,9 +319,6 @@ function clickOnState(d) {
                         }
                         drawCoutyInCart();
                 })
-                console.log("height")
-                console.log(pageWidth)
-                console.log(pageHeight)
         var cancelButton = d3.select("#main-map")
             .append("circle")
             .attr("class", "redButton")
@@ -727,7 +724,6 @@ function mouseOutState(d) {
 }
 function updateBubble(){
     var l = countyCartColor.size();
-//    console.log("bubble:"+countyCartColor.size())
     $("#num_states").html(l);
     if(l<1){
         $("#num_states").css("opacity",0);
@@ -746,6 +742,5 @@ function drawCoutyInCart(){
 }
 
 $('#exampleModal').on('show.bs.modal', function (e) {
-    console.log("call draw line chart");
     drawLineChart();
 })
