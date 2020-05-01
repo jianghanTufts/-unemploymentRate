@@ -38,17 +38,17 @@
         </div>
         <div class="right-page">
             <div class="chart-container">
-                <h3 id="ranking_title"></h3></br>
+                <div id="ranking_title" class = "chart_title"></div></br>
                 <div id = "ranking"></div>
-                <h3 id="chosen_county_title"></h3>
+                <div id="chosen_county_title" class = "chart_title"></div>
                 <div id = "county_select"></div>
             </div>
         </div>
     <div id="detail_info">
     </div>
 </div>
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document" id = "window">
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" id = "window">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Comparation of Different County</h5>
@@ -57,6 +57,7 @@
                 </button>
             </div>
             <div id = "line-chart" class="modal-body" width = 400 height = 400>
+                <div id="line-dashboard" class="chart-dashboard"></div>
             </div>
         </div>
     </div>
@@ -67,6 +68,7 @@
 <!-- <script src="js/d3.js"></script> -->
 <!--<script src="js/d3.v4.min.js"></script>-->
 <script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
 <script src="js/topojson.v1.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

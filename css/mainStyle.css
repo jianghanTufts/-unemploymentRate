@@ -218,3 +218,25 @@ header{
     background-repeat: no-repeat;
     background-size: 30px 30px;
 }
+
+.chart_title{
+    font-size: 20px;
+    font-weight:bold;
+}
+.chart-dashboard{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 71%;
+    border-left: 1px solid black;
+    /*height: 50px;*/
+    /*width: 50px;*/
+    /*background: #0c5460;*/
+}
+.chart-text{
+
+}
+.modal-body{
+    max-height: 600px;
+}

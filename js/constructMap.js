@@ -24,7 +24,7 @@ var chartWidth = pageWidth * 0.35 - margin.right;//800
 var chartHeight = 500 ;//500
 var barHeight = (15/500) *chartHeight ;
 var yAxisOffset = 150;
-var xAxisOffset = 50;
+var xAxisOffset = 30;
 var offsetBetweenBar = 5;
 var offsetBetweenBarXAxis = 10;
 
@@ -505,9 +505,12 @@ function getYScale(objectList, chart_catogary){
 }
 
 function setTitle(title, text) {
-        d3.select(title).text(text)
-            .attr("font-size",10);
+    d3.select(title).text(text);
+    $(".chart_title").css("margin-left",0.3*width);
+    $(".chart_title").css("margin-top",0.1*width);
+
 }
+
 
 
 
