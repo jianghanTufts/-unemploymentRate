@@ -353,6 +353,8 @@ function selectCounty(d) {
 
     if(!countyCartColor.has(d.id) && countyCartColor.size() >= 10){
         alert("Up to ten counties can be compared at the same time!");
+        clickedOnCounty = false;
+        return
     }
     else 
     {
