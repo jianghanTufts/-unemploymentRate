@@ -46,7 +46,6 @@ let svgChosenCounty = d3.select("#county_select")
         .attr('width', chartWidth)
         .attr('height', chartHeight/5);
 
-var countyCart = new Array();
 var countyCartColor = d3.map();
 var active = d3.select(null);
 var currentCountyColor;
@@ -360,22 +359,14 @@ function selectCounty(d) {
     {
         if (countyCartColor.has(d.id))
         {
-            for (var i = 0; i < countyCart.length; i++)
-            {
-                if (countyCart[i] == d.id)
-                {
-                    delete countyCart[i];
-                    break;
-                }
-            }
             $(".county-"+d.id).css("fill",countyCartColor.get(d.id));
             countyCartColor.remove(d.id);
+            clickedOnCounty = false;
         }
         else 
         {
             countyCartColor.set(d.id,currentCountyColor)
             $(".county-"+d.id).css("fill","orange");
-            countyCart.push(d.id);
         }
         
     }
