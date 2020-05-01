@@ -196,7 +196,7 @@ function drawLineChart() {
             .attr("data-setpos",i)
             .attr('width', "10px")
             .attr('height', "10px")
-            .attr('transform', 'translate(' + 10 + ',' + 40 * (i+3) + ')')
+            .attr('transform', 'translate(' + 10 + ',' + 40 * (i+1) + ')')
             .style("fill", function(){
                 return line_color(i);
             })
@@ -222,7 +222,7 @@ function drawLineChart() {
             .html(function(){
                 return nameset[i] + "&nbsp;&nbsp;" + dataset[i][0][1] + "%";
             })
-            .attr('transform', 'translate(' + 30 + ',' + (40 * (i+3) + 8)  + ')');
+            .attr('transform', 'translate(' + 30 + ',' + (40 * (i+1) + 8)  + ')');
 
     }
     line_chart
@@ -280,13 +280,13 @@ function drawLineChart() {
                 .transition()
                 .attr('transform', function(){
                     var pos = $(this).data("setpos");
-                    return 'translate(' + 30 + ',' + (40 * (posset[pos] + 2) + 8)  + ')';
+                    return 'translate(' + 30 + ',' + (40 * (posset[pos] ) + 8)  + ')';
                 });
             legend_chart.selectAll('rect')
                 .transition()
                 .attr('transform', function(){
                     var pos = $(this).data("setpos");
-                    return 'translate(' + 10 + ',' + 40 * (posset[pos] + 2)  + ')';
+                    return 'translate(' + 10 + ',' + 40 * (posset[pos] )  + ')';
                 });
         })
         .on('mouseout', function(){
