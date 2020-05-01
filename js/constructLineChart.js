@@ -260,7 +260,7 @@ function drawLineChart() {
                         count++;
                     }
                 });
-                if(posset.indexOf(count)>-1){
+                while(posset.indexOf(count)>-1){
                     count--;
                 }
                 posset.push(count);
