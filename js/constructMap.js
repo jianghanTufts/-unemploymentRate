@@ -205,6 +205,7 @@ function buildPercentageChart() {
 }
 
 function clickOnState(d) {
+    
         ifCountyMode = true;
         chosenStateId = d.id;
         drawRankingChart(currentYear,"county",svgRanking)
@@ -262,25 +263,24 @@ function clickOnState(d) {
                         var rect_width = 0;
                         if ((Math.floor(d.id/1000) == chosenStateId  && ifCountyMode) && id_to_countyName.has(d.id))
                         {
-
-                                rect_width = id_to_countyName.get(d.id).length;
-                                state_map.append("rect")
-                                        .attr("x", county_x+4)
-                                        .attr("y", county_y-13)
-                                        .attr("width", rect_width*2)
-                                        .attr("height", 8)
-                                        .style("opacity",0.3)
-                                        .attr("class", "county_label1")
-                                        .style("fill", "#e3e3e3")
-                                        .style("stroke", "grey");
+//                                rect_width = id_to_countyName.get(d.id).length;
+//                                state_map.append("rect")
+//                                        .attr("x", county_x+4)
+//                                        .attr("y", county_y-18)
+//                                        .attr("width", 55*4/scale)
+//                                        .attr("height", 22*2/scale)
+//                                        .style("opacity",0.2)
+//                                        .attr("class", "county_label1")
+//                                        .style("fill", "#e3e3e3")
+//                                        .style("stroke", "grey");
 
                                 state_map.append("text")
                                         .attr("transform", function(d){return "translate("+(county_x+8)+","+(county_y-8)+")"})
                                         .text(id_to_countyName.get(d.id))
                                         .attr("class", "county_label2")
-                                        .style("fill", "rgb(203, 214, 0)")
+                                        .style("fill", "rgb(217, 171, 203)")
                                         .attr("dy", ".35em")
-                                        .style("font-size", "3.5px");
+                                        .style("font-size", (20/scale)+"px");
                         
 
                             currentCountyColor = d3.select(".county-"+d.id).style('fill');
@@ -299,7 +299,7 @@ function clickOnState(d) {
                         }
                 })
                 .on("mouseout", function (d) {
-                        state_map.select(".county_label1").remove();
+//                        state_map.select(".county_label1").remove();
                         state_map.select(".county_label2").remove();
                         if (d.id > 1000 && !clickedOnCounty)
                         {
